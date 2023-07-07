@@ -1,5 +1,5 @@
 # Clark
-AI Personel Data Assistant with OpenAI
+AI Personel Data Assistant with OpenAI, and LangChain
 
 ## Installation
 
