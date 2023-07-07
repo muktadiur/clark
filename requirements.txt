@@ -1,0 +1,5 @@
+python-dotenv==1.0.0
+pypdf==3.12.0
+langchain==0.0.219
+openai==0.27.8
+faiss-cpu==1.7.4
