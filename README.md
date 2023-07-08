@@ -24,9 +24,9 @@ Place your own data (csv, pdf) into `data/pdf` and `data/csv` folder.
 
 ```
 python app.py  # to use openai embeddings
-or
+
 python app.py hf  # to use huggingface embeddings
-or
+
 python app.py huggingface   # to use huggingface embeddings
 
 ```
