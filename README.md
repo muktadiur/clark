@@ -1,5 +1,5 @@
 # Clark
-AI Personnel data(pdf, csv) assistant with OpenAI, and LangChain
+Chat with personnel documents(pdf, CSV) using LangChain, OpenAI/HuggingFace.
 
 ## Installation
 
