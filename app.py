@@ -1,20 +1,26 @@
+import sys
 from typing import List
 from dotenv import load_dotenv
 
 from langchain.schema import Document
 from langchain.vectorstores import FAISS
 from langchain.document_loaders import PyPDFDirectoryLoader, DirectoryLoader
-
+from langchain.embeddings.base import Embeddings
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.chat_models import ChatOpenAI
 
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
+embeddings_to_use: str = sys.argv[1] if len(sys.argv) > 1 else None
+
+def get_embeddings() -> Embeddings:
+    if embeddings_to_use in ['hf', 'huggingface']:
+        return HuggingFaceInstructEmbeddings(model_name='hkunlp/instructor-xl')
+    return OpenAIEmbeddings()
 
 def get_vector_store(documents: List[Document]) -> FAISS:
-    embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name='hkunlp/instructor-xl')
+    embeddings: Embeddings = get_embeddings()
     vector_store: FAISS = FAISS.from_documents(
         documents=documents,
         embedding=embeddings
@@ -40,7 +46,7 @@ def get_pdf_documents() -> List[Document]:
     return documents
 
 def get_csv_documents() -> List[Document]:
-    loader = DirectoryLoader('data/csv/')
+    loader = DirectoryLoader('data/csv/', glob="**/[!.]*.csv")
     documents: List[Document] = loader.load()
     return documents
 
@@ -48,9 +54,11 @@ def main() -> None:
     load_dotenv()
     pdf_documents: List[Document] = get_pdf_documents()
     csv_documents: List[Document] = get_csv_documents()
+
     vector_store: FAISS = get_vector_store(
         documents=pdf_documents + csv_documents
     )
+
     chain = get_conversation_chain(
         vector_store=vector_store
     )
@@ -59,11 +67,12 @@ def main() -> None:
     print("(type 'exit' to quit)")
     while(True):
         query: str = input("You: ")
-        response: str = chain.run(query)
-        print(f"Clark: {response}")
+
         if query.lower() == "exit":
             break
-    
+
+        response: str = chain.run(query)
+        print(f"Clark: {response}")
 
 if __name__ == '__main__':
     main()

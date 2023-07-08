@@ -9,3 +9,5 @@ pyvenv.cfg
 
 .vscode/
 
+data/*
+
