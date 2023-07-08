@@ -13,7 +13,7 @@ pip install -r requirements.txt
 
 Rename `.env.example` to `.env` and update the OPENAI_API_KEY [OpenAI API key](https://platform.openai.com/account/api-keys).
 
-Create data/pdf data/csv folder.
+### Create data/pdf data/csv folder.
 ```
 mkdir -p data/pdf data/csv
 ```
