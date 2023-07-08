@@ -1,5 +1,5 @@
 # Clark
-AI Personel Data Assistant with OpenAI, and LangChain
+AI Personnel data(pdf, csv) assistant with OpenAI, and LangChain
 
 ## Installation
 
