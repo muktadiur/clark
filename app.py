@@ -1,64 +1,8 @@
-import sys
-from typing import List
 from dotenv import load_dotenv
-
-from langchain.schema import Document
-from langchain.vectorstores import FAISS
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.embeddings.base import Embeddings
-from langchain.embeddings import (
-    OpenAIEmbeddings,
-    HuggingFaceInstructEmbeddings
-)
-
-from utils import get_documents
-
-
-embeddings_to_use: str = sys.argv[1] if len(sys.argv) > 1 else None
-
-
-def get_embeddings() -> Embeddings:
-    if embeddings_to_use in ['hf', 'huggingface']:
-        return HuggingFaceInstructEmbeddings(model_name='hkunlp/instructor-xl')
-    return OpenAIEmbeddings()
-
-
-def get_vector_store(documents: List[Document]) -> FAISS:
-    embeddings: Embeddings = get_embeddings()
-    vector_store: FAISS = FAISS.from_documents(
-        documents=documents,
-        embedding=embeddings
-    )
-    return vector_store
-
-
-def get_conversation_chain(vector_store: FAISS):
-    llm = ChatOpenAI()
-    memory = ConversationBufferMemory(
-        memory_key='chat_history',
-        return_messages=True
-    )
-    chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vector_store.as_retriever(),
-        memory=memory
-    )
-    return chain
+from chat import get_chain
 
 
 def main() -> None:
-    load_dotenv()
-
-    vector_store: FAISS = get_vector_store(
-        documents=get_documents()
-    )
-
-    chain = get_conversation_chain(
-        vector_store=vector_store
-    )
-
     print("Welcome to the Clark!")
     print("(type 'exit' to quit)")
     while (True):
@@ -67,9 +11,10 @@ def main() -> None:
         if query.lower() == "exit":
             break
 
-        response: str = chain.run(query)
+        response: str = get_chain().run(query)
         print(f"Clark: {response}")
 
 
 if __name__ == '__main__':
+    load_dotenv()
     main()
