@@ -11,9 +11,7 @@ from langchain.embeddings import (
     OpenAIEmbeddings,
     HuggingFaceInstructEmbeddings
 )
-
-from utils import get_texts, get_documents
-
+from document_utils import process_documents
 
 embeddings_to_use: str = sys.argv[1] if len(sys.argv) > 1 else None
 
@@ -52,11 +50,10 @@ def get_conversation_chain(
 
 
 def get_chain() -> BaseConversationalRetrievalChain:
-    texts = get_texts(get_documents())
-    vector_store: FAISS = get_vector_store(
+    texts = process_documents()
+    vector_store = get_vector_store(
         texts=texts
     )
-
     return get_conversation_chain(
         vector_store=vector_store
     )

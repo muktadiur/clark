@@ -16,14 +16,14 @@ Rename `.env.example` to `.env` and update the OPENAI_API_KEY [OpenAI API key](h
 
 Place your own data (csv, pdf, docx, doc, txt) into `data/` folder.
 
-## Run
+## Run 
 
 ```
-python app.py  # to use openai embeddings
+python console.py  # to use openai embeddings
 
-python app.py hf  # to use huggingface embeddings
+python console.py hf  # to use huggingface embeddings
 
-python app.py huggingface   # to use huggingface embeddings
+python console.py huggingface   # to use huggingface embeddings
 
 ```
 
@@ -34,3 +34,13 @@ You: what is the capital of Uzbekistan?
 Clark: The capital of Uzbekistan is Tashkent.
 You: exit
 ```
+
+```
+uvicorn app:app --reload
+
+URL: 
+http://127.0.0.1:8000/  
+http://127.0.0.1:8000/docs
+http://127.0.0.1:8000/redoc
+```
+

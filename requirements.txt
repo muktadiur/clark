@@ -3,3 +3,5 @@ pypdf==3.12.0
 langchain==0.0.219
 openai==0.27.8
 faiss-cpu==1.7.4
+uvicorn==0.22.0
+fastapi==0.98.0

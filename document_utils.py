@@ -32,7 +32,7 @@ def get_documents() -> List[Document]:
 
 
 def get_texts(documents):
-    chunks = []
+    texts = []
     text_splitter = CharacterTextSplitter(
         separator="\n",
         chunk_size=500,
@@ -41,8 +41,12 @@ def get_texts(documents):
     )
 
     for document in documents:
-        texts: List[str] = text_splitter.split_text(
+        chunks: List[str] = text_splitter.split_text(
             document.page_content
         )
-        chunks.extend(texts)
-    return chunks
+        texts.extend(chunks)
+    return texts
+
+
+def process_documents():
+    return get_texts(get_documents())
