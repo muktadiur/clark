@@ -1,15 +1,23 @@
 from dotenv import load_dotenv
-from document_chat import get_chain
 from langchain.chains.conversational_retrieval.base import (
     BaseConversationalRetrievalChain
 )
+from document_utils import process_documents
+from document_conversation import DocumentConversation
 
 
-def main() -> None:
+def main(embeddings_to_use: str = None, model_name: str = None) -> None:
+    conversation = DocumentConversation(
+        embeddings_to_use=embeddings_to_use,
+        model_name=model_name
+    )
+    texts = process_documents()
+    chain: BaseConversationalRetrievalChain = conversation.get_chain(
+        texts=texts
+    )
+
     print("Welcome to the Clark!")
     print("(type 'exit' to quit)")
-
-    chain: BaseConversationalRetrievalChain = get_chain()
 
     while (True):
         query: str = input("You: ")
