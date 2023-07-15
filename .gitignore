@@ -9,4 +9,6 @@ pyvenv.cfg
 
 .vscode/
 
+.DS_Store
+
 

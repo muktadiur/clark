@@ -31,12 +31,12 @@ def get_documents() -> List[Document]:
     return documents
 
 
-def get_texts(documents):
+def get_texts(documents) -> list:
     texts = []
     text_splitter = CharacterTextSplitter(
         separator="\n",
-        chunk_size=500,
-        chunk_overlap=100,
+        chunk_size=800,
+        chunk_overlap=150,
         length_function=len
     )
 
@@ -45,8 +45,9 @@ def get_texts(documents):
             document.page_content
         )
         texts.extend(chunks)
+
     return texts
 
 
-def process_documents():
+def process_documents() -> list:
     return get_texts(get_documents())
