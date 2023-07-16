@@ -80,7 +80,7 @@
     });
     const data = await response.json();
     let questionInput = document.querySelector('.question-input');
-    if (data.status === "sucess") {
+    if (data.status === "success") {
       questionInput.style.display = "inline-block";
       hideSpinner();
       questionInput.addEventListener("keypress", function(event) {

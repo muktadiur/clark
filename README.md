@@ -1,7 +1,7 @@
 # Clark
 Chat with personnel documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace, and FastAPI.
 
-![Clark](clark.jpg)
+![Clark](images/clark.jpg)
 
 ## Installation
 
@@ -16,7 +16,7 @@ pip install -r requirements.txt
 Rename `.env.example` to `.env` and update the OPENAI_API_KEY [OpenAI API key](https://platform.openai.com/account/api-keys), HUGGINGFACEHUB_API_TOKEN [HuggingFace Access Tokens] (https://huggingface.co/settings/tokens).
 
 
-Place your own data (csv, pdf, docx, doc, txt) into `data/` folder.
+Place your own data (CSV, pdf, docx, doc, txt) into `data/` folder.
 
 ## Run 
 
@@ -59,15 +59,20 @@ http://127.0.0.1:8000/redoc
 ├── console.py
 ├── data
 │   └── sample_capitals.csv
-├── document_conversation.py
-├── document_utils.py
+├── document
+│   ├── __init__.py
+│   ├── conversation.py
+│   └── utils.py
+├── images
+│   └── clark.jpg
 ├── requirements.txt
-└── templates
-    ├── index.html
-    ├── main.css
-    ├── main.js
-    └── spinner.gif
+├── templates
+│   ├── index.html
+│   ├── main.css
+│   ├── main.js
+│   └── spinner.gif
+└── test_api.py
 
-3 directories, 12 files
+5 directories, 15 files
 ```
 

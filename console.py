@@ -3,8 +3,8 @@ from dotenv import load_dotenv
 from langchain.chains.conversational_retrieval.base import (
     BaseConversationalRetrievalChain
 )
-from document_utils import process_documents
-from document_conversation import DocumentConversation
+from document.utils import process_documents
+from document.conversation import DocumentConversation
 
 
 def main(embeddings_to_use: str = None, model_name: str = None) -> None:
@@ -23,7 +23,7 @@ def main(embeddings_to_use: str = None, model_name: str = None) -> None:
     while (True):
         query: str = input("You: ")
 
-        if query.lower() in ["quit", "exit"] :
+        if query.lower() in ["quit", "exit"]:
             break
 
         response: str = chain.run(query)

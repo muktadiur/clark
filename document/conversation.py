@@ -19,7 +19,7 @@ class DocumentConversation:
         embeddings_to_use: str = None,
         model_name: str = None
     ) -> None:
-        self.embeddings: str = self.get_embeddings(
+        self.embeddings: Embeddings = self.get_embeddings(
             embeddings_to_use=embeddings_to_use,
             model_name=model_name
         )

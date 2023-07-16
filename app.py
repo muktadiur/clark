@@ -6,8 +6,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from document_utils import process_documents
-from document_conversation import DocumentConversation
+from document.utils import process_documents
+from document.conversation import DocumentConversation
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="templates"), name="static")
@@ -47,7 +47,7 @@ async def process_files() -> dict[str, str]:
     texts = process_documents()
     chain = conversation.get_chain(texts=texts)
 
-    return {"status": "sucess"}
+    return {"status": "success"}
 
 
 @app.post("/ask/")
