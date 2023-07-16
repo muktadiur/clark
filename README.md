@@ -49,6 +49,7 @@ http://127.0.0.1:8000/redoc
 ```
 
 ## Project structure
+```
 .
 ├── LICENSE
 ├── README.md
@@ -66,4 +67,5 @@ http://127.0.0.1:8000/redoc
     └── spinner.gif
 
 3 directories, 12 files
+```
 
