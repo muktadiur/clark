@@ -48,3 +48,22 @@ http://127.0.0.1:8000/docs
 http://127.0.0.1:8000/redoc
 ```
 
+## Project structure
+.
+├── LICENSE
+├── README.md
+├── app.py
+├── console.py
+├── data
+│   └── sample_capitals.csv
+├── document_conversation.py
+├── document_utils.py
+├── requirements.txt
+└── templates
+    ├── index.html
+    ├── main.css
+    ├── main.js
+    └── spinner.gif
+
+3 directories, 12 files
+
