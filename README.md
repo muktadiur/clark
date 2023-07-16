@@ -36,7 +36,11 @@ You: exit
 ```
 
 ```
-uvicorn app:app --reload
+python app.py  # to use openai embeddings
+
+python app.py hf  # to use huggingface embeddings
+
+python app.py huggingface   # to use huggingface embeddings
 
 URL: 
 http://127.0.0.1:8000/  
