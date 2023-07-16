@@ -35,7 +35,7 @@ def get_texts(documents) -> list:
     texts = []
     text_splitter = CharacterTextSplitter(
         separator="\n",
-        chunk_size=800,
+        chunk_size=1000,
         chunk_overlap=150,
         length_function=len
     )

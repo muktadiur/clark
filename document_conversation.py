@@ -1,5 +1,5 @@
-from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
+from langchain.vectorstores import FAISS
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.embeddings.base import Embeddings

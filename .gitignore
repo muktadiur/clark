@@ -4,11 +4,10 @@ __pycache__/
 # Environments
 .env
 .venv
-
 pyvenv.cfg
 
+# Others
 .vscode/
-
 .DS_Store
 
 
