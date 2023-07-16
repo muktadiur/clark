@@ -1,8 +1,7 @@
-import os
 import sys
 import glob
 import uvicorn
-from fastapi import FastAPI, UploadFile, Request
+from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
