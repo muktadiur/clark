@@ -1,5 +1,5 @@
 # Clark
-Chat with personnel documents(csv, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace.
+Chat with personnel documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace, and FastAPI.
 
 ## Installation
 
