@@ -38,16 +38,6 @@ async def files():
     return [f for f in glob.glob("data/*")]
 
 
-# @app.post("/uploadfiles")
-# async def upload_files(files: list[UploadFile]) -> dict[str, str]:
-#     for file in files:
-#         file_path = os.path.join("data", file.filename)
-#         with open(file_path, "wb") as f:
-#             f.write(file.file.read())
-
-#     return {"status: ": "sucess"}
-
-
 @app.post("/process/")
 async def process_files() -> dict[str, str]:
     global chain

@@ -1,10 +1,7 @@
 #chat-container {
     overflow: auto;
-    margin-top: 20px;
-}
-
-.clark {
-    background-color: beige;
+    margin-top: 10px;
+    width: 70vw;
 }
 
 .header { grid-area: header; }

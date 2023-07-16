@@ -5,3 +5,8 @@ openai==0.27.8
 faiss-cpu==1.7.4
 uvicorn==0.22.0
 fastapi==0.98.0
+jinja2==3.1.2
+unstructured==0.8.1
+tiktoken==0.4.0
+sentence-transformers==2.2.2
+InstructorEmbedding==1.0.1

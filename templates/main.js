@@ -1,19 +1,28 @@
   const BASE_URL = "http://localhost:8000"
 
-  function displayMessage(actor, message, typingSpeed) {
+  function displayMessage(actor, message, typingSpeed, fnCallBack) {
     let index = 0;
     let currentMessage = `${actor}: ${message}`;
     const chatContainer = document.querySelector("#chat-container");
     typingSpeed = typingSpeed || 50;
+    chatContainer.appendChild(document.createElement("br"));
     function typeMessage() {
       if (index < currentMessage.length) {
-        const newChar = document.createTextNode(currentMessage[index]);
-        chatContainer.appendChild(newChar);
+        const ch = currentMessage[index];
+        if (ch.charCodeAt(0) === 10) {
+          chatContainer.appendChild(document.createElement("br"));
+        } else {
+          const newChar = document.createTextNode(currentMessage[index]);
+          chatContainer.appendChild(newChar);
+        }
         index++;
         setTimeout(typeMessage, typingSpeed);
       } else {
         chatContainer.appendChild(document.createElement("br"));
         index++;
+        if (fnCallBack) {
+          fnCallBack();
+        }
       }
     }
     typeMessage();
@@ -30,8 +39,25 @@
     }
   }
 
+  function clearQuestionInput() {
+    let questionInput = document.querySelector('.question-input');
+    questionInput.value = "";
+  }
+
+  function disabledQuestionInput() {
+    let questionInput = document.querySelector('.question-input');
+    questionInput.disabled = true;
+  }
+
+  function enableQuestionInput() {
+    let questionInput = document.querySelector('.question-input');
+    questionInput.disabled = false;
+  }
+
   async function askQuestion(query) {
     displayMessage('You', query, 20);
+    clearQuestionInput();
+    disabledQuestionInput()
     const response = await fetch(`${BASE_URL}/ask`, {
       method: 'POST',
       headers: {
@@ -41,9 +67,7 @@
       body: JSON.stringify({"message": query})
     });
     let answer = await response.json();
-    let questionInput = document.querySelector('.question-input');
-    questionInput.value = "";
-    displayMessage('Clark', answer.content, 60);
+    displayMessage('Clark', answer.content, 60, enableQuestionInput);
   }
 
   async function process_files() {
@@ -69,6 +93,7 @@
       questionInput.style.display = "none";
       hideSpinner();
     }
+    hideSpinner()
   }
 
   function hideSpinner() {

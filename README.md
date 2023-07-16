@@ -11,7 +11,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Rename `.env.example` to `.env` and update the OPENAI_API_KEY [OpenAI API key](https://platform.openai.com/account/api-keys).
+Rename `.env.example` to `.env` and update the OPENAI_API_KEY [OpenAI API key](https://platform.openai.com/account/api-keys), HUGGINGFACEHUB_API_TOKEN [HuggingFace Access Tokens] (https://huggingface.co/settings/tokens).
 
 
 Place your own data (csv, pdf, docx, doc, txt) into `data/` folder.
