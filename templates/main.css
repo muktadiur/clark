@@ -2,20 +2,33 @@
     overflow: auto;
     margin-top: 10px;
     width: 70vw;
+    padding-bottom: 50px;
 }
 
-.header { grid-area: header; }
+.header { 
+    grid-area: header; 
+}
+
+.header h2::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    background-color: red;
+    vertical-align: bottom;
+    display: inline-block;
+}
 
 .menu { 
     grid-area: menu; 
 }
 .menu ul {
-    list-style: none;
+    list-style: square;
     padding-inline-start: 20px;
+    max-width: 300px;
 }
 .icon-file {
     position: relative;
-    top: 3px;
+    top: 2px;
     height: 18px;
     width: 18px;
 }
@@ -29,6 +42,9 @@
     font-size: 18px;
     min-width: 50vw;
     display: none;
+    position: sticky;
+    top: 30px;
+    height: 20px;
 }
 .question-spinner {
     position: relative;
@@ -41,7 +57,11 @@
     margin-right: 30px;
 }
 
-.footer { grid-area: footer; }
+.footer { 
+    grid-area: footer;
+    position: fixed;
+    bottom: 10px;
+}
 
 .container {
     display: grid;
