@@ -3,6 +3,7 @@ import glob
 import uvicorn
 from pathlib import Path
 from fastapi import FastAPI, Request, UploadFile
+from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -30,6 +31,16 @@ async def home(request: Request):
     return templates.TemplateResponse(
         "index.html",
         {"request": request}
+    )
+
+
+@app.get('/favicon.ico')
+async def favicon() -> FileResponse:
+    path = Path("images")
+    file_path = path / "favicon.ico"
+    return FileResponse(
+        path=file_path,
+        headers={"Content-Disposition": "attachment; filename=favicon.ico"}
     )
 
 
