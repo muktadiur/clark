@@ -1,7 +1,8 @@
 import sys
 import glob
 import uvicorn
-from fastapi import FastAPI, Request
+from pathlib import Path
+from fastapi import FastAPI, Request, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -33,8 +34,19 @@ async def home(request: Request):
 
 
 @app.get("/files")
-async def files():
+async def files() -> list[str]:
     return [f for f in glob.glob("data/*")]
+
+
+@app.post("/uploadfiles")
+async def uploadfiles(files: list[UploadFile]) -> dict[str, str]:
+    path = Path("data")
+    for file in files:
+        file_path = path / file.filename
+        with open(file_path, 'wb') as f:
+            f.write(await file.read())
+
+    return {"status": "success"}
 
 
 @app.post("/process/")

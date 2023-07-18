@@ -32,6 +32,7 @@
     const response = await fetch(`${BASE_URL}/files`);
     const files = await response.json();
     let filesContainer = document.querySelector('#filesContainer');
+    filesContainer.innerHTML = "";
     for (let file of files) {
       let li = document.createElement('li');
       li.textContent = file
@@ -71,6 +72,8 @@
   }
 
   async function process_files() {
+    showSpinner();
+    let questionInput = document.querySelector('.question-input');
     const response = await fetch(`${BASE_URL}/process`, {
       method: 'POST',
       headers: {
@@ -79,21 +82,32 @@
       }
     });
     const data = await response.json();
-    let questionInput = document.querySelector('.question-input');
     if (data.status === "success") {
-      questionInput.style.display = "inline-block";
-      hideSpinner();
       questionInput.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
           event.preventDefault();
           askQuestion(questionInput.value);
         }
       });
-    } else {
-      questionInput.style.display = "none";
-      hideSpinner();
     }
+    questionInput.disabled = false;
     hideSpinner()
+  }
+
+  async function uploadFiles(event) {
+    const formData = new FormData();
+
+    Array.from(event.target.files).forEach(file => {
+      formData.append('files', file);
+    });
+
+    await fetch(`${BASE_URL}/uploadfiles`, {
+      method: "post",
+      enctype: "multipart/form-data",
+      body: formData
+    });
+
+    load_files();
   }
 
   function hideSpinner() {
@@ -104,12 +118,22 @@
   }
 
   function showSpinner() {
+    let questionSpinnerMessage = document.querySelector('.question-spinner-message');
     let questionSpinner = document.querySelector('.question-spinner');
+    questionSpinnerMessage.style.display = "block";
     questionSpinner.style.display = "inline-block";
   }
 
   function load() {
     load_files();
+    process_files();
+  }
+
+  function handleFileChange(event) {
+    uploadFiles(event);
+  }
+
+  function handleFileProcess() {
     process_files();
   }
   

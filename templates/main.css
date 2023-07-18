@@ -23,6 +23,7 @@
 }
 .menu ul {
     list-style: square;
+    line-height: 20px;
     padding-inline-start: 20px;
     max-width: 300px;
 }
@@ -31,6 +32,18 @@
     top: 2px;
     height: 18px;
     width: 18px;
+}
+.icon-upload {
+    width: 20px;
+    margin: 0px 50px;
+    cursor: pointer;
+}
+.icon-process {
+    cursor: pointer;
+    width: 20px;
+}
+input[type=file] {
+    display: none;
 }
 
 .main { 
@@ -41,7 +54,6 @@
     padding: 16px;
     font-size: 18px;
     min-width: 50vw;
-    display: none;
     position: sticky;
     top: 30px;
     height: 20px;

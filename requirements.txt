@@ -12,3 +12,4 @@ sentence-transformers==2.2.2
 InstructorEmbedding==1.0.1
 pytest==7.4.0
 httpx==0.24.1
+python-multipart==0.0.6
