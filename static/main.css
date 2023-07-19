@@ -1,0 +1,210 @@
+body {
+    background-color: #fffefc;
+}
+
+#chat-container {
+    overflow: auto;
+    margin-top: 10px;
+    width: 70vw;
+    padding-bottom: 50px;
+}
+
+.header {
+    grid-area: header;
+}
+
+.header h2::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    background-color: red;
+    vertical-align: bottom;
+    display: inline-block;
+}
+
+.header h1 {
+    font-size: 20vw;
+    margin-top: 0px;
+}
+
+.header h1::after {
+    content: "";
+    width: 2vw;
+    height: 2vw;
+    background-color: red;
+    vertical-align: bottom;
+    display: inline-block;
+}
+
+.menu {
+    grid-area: menu;
+}
+
+.menu ul {
+    list-style: square;
+    line-height: 20px;
+    padding-inline-start: 20px;
+    max-width: 300px;
+}
+
+.icon-file {
+    position: relative;
+    top: 2px;
+    height: 18px;
+    width: 18px;
+}
+
+.icon-upload {
+    width: 20px;
+    margin: 0px 50px;
+    cursor: pointer;
+}
+
+.icon-process {
+    cursor: pointer;
+    width: 20px;
+}
+
+input[type=file] {
+    display: none;
+}
+
+.main {
+    grid-area: main;
+    height: 80vh;
+}
+
+.question-input {
+    padding: 16px;
+    font-size: 18px;
+    min-width: 50vw;
+    position: sticky;
+    top: 30px;
+    height: 20px;
+    border-radius: 15px;
+    border: 1px solid lightgray;
+}
+
+.question-spinner {
+    position: relative;
+    top: 15px;
+    margin-left: 20px;
+    width: 40px;
+}
+
+.question-spinner-message {
+    font-size: 24px;
+    position: relative;
+    margin-right: 30px;
+}
+
+.footer {
+    grid-area: footer;
+    position: fixed;
+    bottom: 10px;
+}
+
+.container {
+    display: grid;
+    grid-template-areas:
+        'header header header header header header'
+        'menu main main main main main'
+        'footer footer footer footer footer footer';
+    gap: 10px;
+    padding: 10px;
+}
+
+.top-nav {
+    list-style: none;
+    display: inline-flex;
+    float: right;
+    margin: 30px;
+}
+
+.top-nav li {
+    margin: 0px 10px;
+}
+
+.top-nav a {
+    text-decoration: none;
+    color: rgba(55, 53, 47, 0.65);
+    cursor: pointer;
+}
+
+.top-nav li:first-child::after {
+    content: "";
+    width: 1px;
+    background: gray;
+    height: 20px;
+    margin: 0 10px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 30px;
+}
+
+.top-message {
+    font-size: 8vw;
+    color: grey;
+}
+
+.login-container {
+    display: flex;
+    width: 30vw;
+    height: 30vh;
+    border: 1px solid rgba(15, 15, 15, 0.15);
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.auth-btn {
+    margin: 5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    height: 36px;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 500;
+    border: 1px solid rgba(15, 15, 15, 0.15);
+    width: 100%;
+    box-shadow: rgba(15, 15, 15, 0.05) 0px 1px 2px;
+}
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.center {
+    text-align: center;
+    color: gray;
+}
+
+.link {
+    text-decoration: none;
+    color: rgba(55, 53, 47, 0.65);
+    cursor: pointer;
+}
+
+.ask-btn {
+    font-size: 30px;
+    color: gray;
+    position: relative;
+    left: -53px;
+    top: 3px;
+    border: none;
+    background-color: transparent;
+}
+
+.ask-btn:hover {
+    color: green;
+    cursor: pointer;
+}

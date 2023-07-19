@@ -1,7 +1,7 @@
 # Clark
-Chat with personnel documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace, and FastAPI.
+Chat with private documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace, and FastAPI.
 
-![Clark](images/clark.jpg)
+![Clark](static/images/clark.jpg)
 
 ## Installation
 
@@ -50,9 +50,16 @@ http://127.0.0.1:8000/docs
 http://127.0.0.1:8000/redoc
 ```
 
+### Run in docker
+```
+docker build -t clark .
+docker run -p 8000:8000 -it clark
+```
+
 ## Project structure
 ```
 .
+├── Dockerfile
 ├── LICENSE
 ├── README.md
 ├── app.py
@@ -63,16 +70,22 @@ http://127.0.0.1:8000/redoc
 │   ├── __init__.py
 │   ├── conversation.py
 │   └── utils.py
-├── images
-│   └── clark.jpg
 ├── requirements.txt
-├── templates
+├── static
+│   ├── auth
+│   │   ├── login.html
+│   │   └── signup.html
+│   ├── base.html
+│   ├── home.html
+│   ├── images
+│   │   ├── clark.jpg
+│   │   └── favicon.ico
 │   ├── index.html
+│   ├── index.js
 │   ├── main.css
-│   ├── main.js
 │   └── spinner.gif
 └── test_api.py
 
-5 directories, 15 files
+6 directories, 21 files
 ```
 

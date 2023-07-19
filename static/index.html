@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <title>Clark</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header"><h2>Clark</h2></div>
+    <div class="menu">
+      <h4>
+        <span class="icon-file">
+          <svg width="16px" height="16px" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 6 2 C 4.9057453 2 4 2.9057453 4 4 L 4 20 C 4 21.094255 4.9057453 22 6 22 L 18 22 C 19.094255 22 20 21.094255 20 20 L 20 8 L 14 2 L 6 2 z M 6 4 L 13 4 L 13 9 L 18 9 L 18 20 L 6 20 L 6 4 z"/></svg>
+        </span>
+        Files
+        <span>
+          <label for="file">
+            <img class="icon-upload" title="Upload" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA+UlEQVR4nO2YWwrCQAxFzyo64v5XYn/0SwWxupqIEKGUvpRRErkHQgfE6ZzctIjwfRqv1GyAq9dznZICXADzugNbkktYRpkN0PnBX9f+usswZqWXxM27/xJpep+FTqaMSNATIYNMmZAYioSWKTMSYyJhZc4LD/GYyPClcCIAB+A48yaaEsG/85TYkwCbEUmFSSQYSqQmtrLaFXtM0b5xn49Ze4Pdij1CiKTfwyIcAokE6yZKJFg3USLBuokSCdZNlEiwbqJEgnWTIIm0Cz/zf3IOC/LHgUnEUSKVMY2Wo9GqjGm0HI1WZUyj5Wi0KmMarX8dLQtS/L3IA0inVIWgq3THAAAAAElFTkSuQmCC">
+          </label>
+          <input id="file" name="file" type="file" accept=".pdf,.docx,.doc,.csv,.txt" onchange="handleFileChange(event)" multiple />
+        </span>
+        <span onclick="handleFileProcess()">
+          <img class="icon-process" title="Process" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAABU0lEQVR4nO2WO07DQBCGP5pQwA1IihC4Tqh53AByB18DUlIACggQjy4FSByCxxGABhoHKUaD/kgrK47WG69FkV9ayZZm/m/XWs8MLPTPdQGMgG/gFbgDekArNvgRyKYs20wfaDqxia9pUmCaVwNYATrADnAK/Cj2A+g6XswD91EbuArM/dMWMA5NBoYhuS3gUwmuQeyvRV/BlzmjUGjme9qRVjtnGFU97fCEmnUv8Hbd4DeB7d+sSkvAE3A8K+hLYCsMVWlZnumsoFRBFlyVVuVphyrUOfCgz1OVNgV+oWbtCXxTN/hM4IPYILfYdNSx0lyrLNS0sudbvSaxdk+u9X7ou+tQqJs7aTDvwFoIeFjylru5Yw0EhJ7Ymvt6YG6pBpMpoasxJtMlsfFmF9hQdWt4gEvBE+fZbuORU9Xyywa/qGoC+8At8KzR1vr2IDZ4IebRL6vhlB0Uewq2AAAAAElFTkSuQmCC">
+        </span>
+      </h4>
+      <ul id="filesContainer"></ul>
+    </div>
+    <div class="main">
+      <div>
+        <div class="question-spinner-message">Processing data. Please wait...</div>
+        <input class="question-input" placeholder="Ask your query" name="question" disabled>
+        <button onclick="ask()" type="button" class="ask-btn">&#10148;</button>
+        <img class="question-spinner" src="{{url_for('static', path='spinner.gif')}}">
+
+        <div id="chat-container"></div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block scripts %}
+  <script src="{{url_for('static', path='index.js')}}"></script>
+{% endblock %}

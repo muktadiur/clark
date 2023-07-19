@@ -29,9 +29,10 @@
   }
 
   async function load_files() {
+    let filesContainer = document.querySelector('#filesContainer');
+    if (!filesContainer) return;
     const response = await fetch(`${BASE_URL}/files`);
     const files = await response.json();
-    let filesContainer = document.querySelector('#filesContainer');
     filesContainer.innerHTML = "";
     for (let file of files) {
       let li = document.createElement('li');
@@ -72,26 +73,23 @@
   }
 
   async function process_files() {
-    showSpinner();
     let questionInput = document.querySelector('.question-input');
-    const response = await fetch(`${BASE_URL}/process`, {
+    if (!questionInput) return;
+
+    showSpinner();
+
+    await fetch(`${BASE_URL}/process`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
     });
-    const data = await response.json();
-    if (data.status === "success") {
-      questionInput.addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          askQuestion(questionInput.value);
-        }
-      });
-    }
+
     questionInput.disabled = false;
-    hideSpinner()
+
+    hideSpinner();
+
   }
 
   async function uploadFiles(event) {
@@ -120,6 +118,7 @@
   function showSpinner() {
     let questionSpinnerMessage = document.querySelector('.question-spinner-message');
     let questionSpinner = document.querySelector('.question-spinner');
+    if (!questionSpinnerMessage || !questionSpinner) return;
     questionSpinnerMessage.style.display = "block";
     questionSpinner.style.display = "inline-block";
   }
@@ -127,6 +126,19 @@
   function load() {
     load_files();
     process_files();
+    let questionInput = document.querySelector('.question-input');
+    if (!questionInput) return;
+    questionInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        askQuestion(questionInput.value);
+      }
+    });
+  }
+
+  function ask() {
+    let questionInput = document.querySelector('.question-input');
+    askQuestion(questionInput.value);
   }
 
   function handleFileChange(event) {
