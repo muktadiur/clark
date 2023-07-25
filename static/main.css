@@ -1,5 +1,17 @@
+
+:root {
+    --main-bg-color: #fffefc;
+    --red-color: red;
+    --gray-color: gray;
+    --green-color: green;
+    --light-gray-color: rgba(55, 53, 47, 0.65);
+    --dark-gray-color: rgba(15, 15, 15, 0.15);
+    --border-radius: 4px;
+    --light-border: 1px solid var(--light-gray-color);
+}
+
 body {
-    background-color: #fffefc;
+    background-color: var(--main-bg-color);
 }
 
 #chat-container {
@@ -13,13 +25,16 @@ body {
     grid-area: header;
 }
 
-.header h2::after {
+.header h2::after, .header h1::after {
     content: "";
-    width: 5px;
-    height: 5px;
-    background-color: red;
+    background-color: var(--red-color);
     vertical-align: bottom;
     display: inline-block;
+}
+
+.header h2::after {
+    width: 5px;
+    height: 5px;
 }
 
 .header h1 {
@@ -28,12 +43,8 @@ body {
 }
 
 .header h1::after {
-    content: "";
     width: 2vw;
     height: 2vw;
-    background-color: red;
-    vertical-align: bottom;
-    display: inline-block;
 }
 
 .menu {
@@ -47,22 +58,23 @@ body {
     max-width: 300px;
 }
 
-.icon-file {
+.icon-file, .icon-upload, .icon-process {
+    width: 20px;
     position: relative;
+}
+
+.icon-file {
     top: 2px;
     height: 18px;
-    width: 18px;
 }
 
 .icon-upload {
-    width: 20px;
     margin: 0px 50px;
     cursor: pointer;
 }
 
 .icon-process {
     cursor: pointer;
-    width: 20px;
 }
 
 input[type=file] {
@@ -85,8 +97,11 @@ input[type=file] {
     border: 1px solid lightgray;
 }
 
-.question-spinner {
+.question-spinner, .question-spinner-message {
     position: relative;
+}
+
+.question-spinner {
     top: 15px;
     margin-left: 20px;
     width: 40px;
@@ -94,7 +109,6 @@ input[type=file] {
 
 .question-spinner-message {
     font-size: 24px;
-    position: relative;
     margin-right: 30px;
 }
 
@@ -125,16 +139,16 @@ input[type=file] {
     margin: 0px 10px;
 }
 
-.top-nav a {
+.top-nav a, .link {
     text-decoration: none;
-    color: rgba(55, 53, 47, 0.65);
+    color: var(--light-gray-color);
     cursor: pointer;
 }
 
 .top-nav li:first-child::after {
     content: "";
     width: 1px;
-    background: gray;
+    background: var(--gray-color);
     height: 20px;
     margin: 0 10px;
     display: inline-block;
@@ -144,17 +158,20 @@ input[type=file] {
 
 .top-message {
     font-size: 8vw;
-    color: grey;
+    color: var(--gray-color);
 }
 
-.login-container {
+.login-container, .auth-container {
     display: flex;
-    width: 30vw;
-    height: 30vh;
-    border: 1px solid rgba(15, 15, 15, 0.15);
     justify-content: center;
     align-items: center;
     border-radius: 10px;
+}
+
+.login-container {
+    width: 30vw;
+    height: 30vh;
+    border: 1px solid var(--dark-gray-color);
 }
 
 .auth-btn {
@@ -165,38 +182,29 @@ input[type=file] {
     justify-content: center;
     white-space: nowrap;
     height: 36px;
-    border-radius: 4px;
+    border-radius: var(--border-radius);
     background: white;
     font-size: 14px;
     line-height: 1;
     font-weight: 500;
-    border: 1px solid rgba(15, 15, 15, 0.15);
+    border: var(--light-border);
     width: 100%;
-    box-shadow: rgba(15, 15, 15, 0.05) 0px 1px 2px;
+    box-shadow: var(--dark-gray-color) 0px 1px 2px;
 }
 
 .auth-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     width: 100%;
     height: 100%;
 }
 
 .center {
     text-align: center;
-    color: gray;
-}
-
-.link {
-    text-decoration: none;
-    color: rgba(55, 53, 47, 0.65);
-    cursor: pointer;
+    color: var(--gray-color);
 }
 
 .ask-btn {
     font-size: 30px;
-    color: gray;
+    color: var(--gray-color);
     position: relative;
     left: -53px;
     top: 3px;
@@ -205,6 +213,6 @@ input[type=file] {
 }
 
 .ask-btn:hover {
-    color: green;
+    color: var(--green-color);
     cursor: pointer;
 }
