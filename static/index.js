@@ -1,155 +1,152 @@
-  const BASE_URL = "http://localhost:8000"
+class ChatLLM {
+  constructor() {
+    this.BASE_URL = "http://localhost:8000";
+    this.chatContainer = document.querySelector("#chat-container");
+    this.filesContainer = document.querySelector('#filesContainer');
+    this.questionInput = document.querySelector('.question-input');
+    this.questionSpinner = document.querySelector('.question-spinner');
+    this.questionSpinnerMessage = document.querySelector('.question-spinner-message');
+    this.typingSpeed = 50;
+    this.headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+  }
 
-  function displayMessage(actor, message, typingSpeed, fnCallBack) {
+  async displayMessage(actor, message) {
     let index = 0;
     let currentMessage = `${actor}: ${message}`;
-    const chatContainer = document.querySelector("#chat-container");
-    typingSpeed = typingSpeed || 50;
-    chatContainer.appendChild(document.createElement("br"));
-    function typeMessage() {
+    this.chatContainer.innerHTML += "<br>";
+    const typeMessage = () => {
       if (index < currentMessage.length) {
         const ch = currentMessage[index];
         if (ch.charCodeAt(0) === 10) {
-          chatContainer.appendChild(document.createElement("br"));
+          this.chatContainer.innerHTML += "<br>";
         } else {
-          const newChar = document.createTextNode(currentMessage[index]);
-          chatContainer.appendChild(newChar);
+          this.chatContainer.innerHTML += currentMessage[index];
         }
         index++;
-        setTimeout(typeMessage, typingSpeed);
+        setTimeout(typeMessage, this.typingSpeed);
       } else {
-        chatContainer.appendChild(document.createElement("br"));
+        this.chatContainer.innerHTML += "<br>";
         index++;
-        if (fnCallBack) {
-          fnCallBack();
-        }
+        return "done"
       }
     }
     typeMessage();
   }
 
-  async function load_files() {
-    let filesContainer = document.querySelector('#filesContainer');
-    if (!filesContainer) return;
-    const response = await fetch(`${BASE_URL}/files`);
-    const files = await response.json();
-    filesContainer.innerHTML = "";
-    for (let file of files) {
-      let li = document.createElement('li');
-      li.textContent = file
-      filesContainer.appendChild(li);
+  async loadFiles() {
+    if (!this.filesContainer) return;
+    try {
+      const response = await fetch(`${this.BASE_URL}/files`);
+      const files = await response.json();
+      this.filesContainer.innerHTML = "";
+      files.forEach(file => {
+        this.filesContainer.innerHTML += `<li>${file}</li>`;
+      });
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  function clearQuestionInput() {
-    let questionInput = document.querySelector('.question-input');
-    questionInput.value = "";
+  clearQuestionInput() {
+    this.questionInput.value = "";
   }
 
-  function disabledQuestionInput() {
-    let questionInput = document.querySelector('.question-input');
-    questionInput.disabled = true;
+  disableQuestionInput() {
+    this.questionInput.disabled = true;
   }
 
-  function enableQuestionInput() {
-    let questionInput = document.querySelector('.question-input');
-    questionInput.disabled = false;
+  enableQuestionInput() {
+    this.questionInput.disabled = false;
   }
 
-  async function askQuestion(query) {
-    displayMessage('You', query, 20);
-    clearQuestionInput();
-    disabledQuestionInput()
-    const response = await fetch(`${BASE_URL}/ask`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({"message": query})
-    });
-    let answer = await response.json();
-    displayMessage('Clark', answer.content, 60, enableQuestionInput);
+  hideSpinner() {
+    this.questionSpinner.style.display = "none";
+    this.questionSpinnerMessage.style.display = "none";
   }
 
-  async function process_files() {
-    let questionInput = document.querySelector('.question-input');
-    if (!questionInput) return;
-
-    showSpinner();
-
-    await fetch(`${BASE_URL}/process`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    questionInput.disabled = false;
-
-    hideSpinner();
-
+  showSpinner() {
+    if (!this.questionSpinner || !this.questionSpinnerMessage) return;
+    this.questionSpinnerMessage.style.display = "block";
+    this.questionSpinner.style.display = "inline-block";
   }
 
-  async function uploadFiles(event) {
+  async askQuestion(query) {
+    await this.displayMessage('You', query);
+    this.clearQuestionInput();
+    this.disableQuestionInput();
+    try {
+      const response = await fetch(`${this.BASE_URL}/ask`, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify({"message": query})
+      });
+      let answer = await response.json();
+      await this.displayMessage('Clark', answer.content);
+      this.enableQuestionInput();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async processFiles() {
+    if (!this.questionInput) return;
+    this.showSpinner();
+    try {
+      await fetch(`${this.BASE_URL}/process`, {
+        method: 'POST',
+        headers: this.headers
+      });
+      this.enableQuestionInput();
+    } catch (error) {
+      console.error(error);
+    }
+    this.hideSpinner();
+  }
+
+  async uploadFiles(event) {
     const formData = new FormData();
-
     Array.from(event.target.files).forEach(file => {
       formData.append('files', file);
     });
-
-    await fetch(`${BASE_URL}/uploadfiles`, {
-      method: "post",
-      enctype: "multipart/form-data",
-      body: formData
-    });
-
-    load_files();
+    try {
+      await fetch(`${this.BASE_URL}/uploadfiles`, {
+        method: "post",
+        enctype: "multipart/form-data",
+        body: formData
+      });
+      this.loadFiles();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
-  function hideSpinner() {
-    let questionSpinner = document.querySelector('.question-spinner');
-    let questionSpinnerMessage = document.querySelector('.question-spinner-message');
-    questionSpinner.style.display = "none";
-    questionSpinnerMessage.style.display = "none";
-  }
-
-  function showSpinner() {
-    let questionSpinnerMessage = document.querySelector('.question-spinner-message');
-    let questionSpinner = document.querySelector('.question-spinner');
-    if (!questionSpinnerMessage || !questionSpinner) return;
-    questionSpinnerMessage.style.display = "block";
-    questionSpinner.style.display = "inline-block";
-  }
-
-  function load() {
-    load_files();
-    process_files();
-    let questionInput = document.querySelector('.question-input');
-    if (!questionInput) return;
-    questionInput.addEventListener("keypress", function(event) {
+  load() {
+    this.loadFiles();
+    this.processFiles();
+    if (!this.questionInput) return;
+    this.questionInput.addEventListener("keypress", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        askQuestion(questionInput.value);
+        this.askQuestion(this.questionInput.value);
       }
     });
   }
 
-  function ask() {
-    let questionInput = document.querySelector('.question-input');
-    askQuestion(questionInput.value);
+  ask() {
+    this.askQuestion(this.questionInput.value);
   }
 
-  function handleFileChange(event) {
-    uploadFiles(event);
+  handleFileChange(event) {
+    this.uploadFiles(event);
   }
 
-  function handleFileProcess() {
-    process_files();
+  handleFileProcess() {
+    this.processFiles();
   }
-  
-  
-  window.addEventListener("load", load);
-  
-  
+}
+
+const chatLLM = new ChatLLM();
+window.addEventListener("load", () => chatLLM.load());
