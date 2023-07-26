@@ -20,6 +20,7 @@ Place your own data (CSV, pdf, docx, doc, txt) into `data/` folder.
 
 ## Run 
 
+### Console
 ```
 python console.py  # to use openai embeddings
 
@@ -37,6 +38,7 @@ Clark: The capital of Uzbekistan is Tashkent.
 You: exit
 ```
 
+### Web 
 ```
 python app.py  # to use openai embeddings
 

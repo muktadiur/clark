@@ -31,11 +31,16 @@
         <input class="question-input" placeholder="Ask your query" name="question" disabled>
         <button onclick="chatLLM.ask()" type="button" class="ask-btn">&#10148;</button>
         <img class="question-spinner" src="{{url_for('static', path='spinner.gif')}}">
-
         <div id="chat-container"></div>
-
       </div>
     </div>
+    <div class="menur">
+      <h4>
+        <img class="icon-file" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADhElEQVR4nO2a3UtUQRjGf2mpK5GmkWZ1l2B5139Q0SepCd1lQiUU5ZVRXWVddWHedmP5TyRKkX1YF5VWRFmaZUVFHyTdqPiRsTHxHBhcd/fs7uzusXpg4LDvnGfmcebMvPOM8I+gDxjgL0BYxQ9WAnVAO9ADjAA/gFlgRs/DQLfq7ANKCIiQfOAAcA2Ys+r7Lb+AG0AjEMqGkAKgBfhk1ZkGbgOt+mtXaZSWqZjnjYqdBW4CU9b7X4HTQGGmhOwGXluxp8BRdTRRrAAOAQ8svveaomkTYkbhkvXbc2APsMRRW1uBhxZ/p8vR8UhXA/3WFDoFLMU9coBjwLg12hUuhXhTaRTYTPpRpRE3bb4DKlMltFeYZ8DaFDgSxXKtaObdj8D6JDgiOhGv3PPBkQxC2pS9aRZKt5C7PjiSRTEwKI7LZBGpCkH7z4R4aljEQgyOi+et3ylmNrxygickVwms4ToZr7JROgZMAusIlhCD7eL6rA06KppU8T7u4FII1u7fQAzc8lMpy0KOiO96rGVuVqUowEKKlCbNqc8R2K8Ge3EL10LQcSEcLUu+oOB5gi+kVZwXFwr2KFi/CITUi7NroeArBc0uGnQhm8RpPIAIfFOwzGGD2ywh5tkVVonz+0LBaQWNoeAKo5aQNw55861DXgRmFMxz1Fi5lnJPyAcyJGRMwVJHIobE91MidpGhqTXi6GO3RQw5TkA9VMf62LsVrCV5lFmHoGFXxkGM5ffqQsF2BY15FtSR8HBO7bQRQ2VvgEfCw51Ys6dEidiUHMAgjgRKFGMmjVj2y2H8ozmDIuwzkzHOo6JRlYwXmwhOZEgEluMZ88xUoGOkqbiF4GGn+vbFjwFxRpUH5MUGBTnWMddcacRFoaz9sK4LgoJmy3/27TjW6aVxGcrZRrWcHdOnvYm+3Gndg7g8wyeKYuCF+tKRDEGhjOOwNqC03vFFQUi+sunDk1T6UKH7Cc/rcpEZJzISfZZNuiZVwkpLzGAajsLRjrIvLREbXBFXWNNsQoZyOpbmXK1Ok9Z0Snkk5sPMzyvWie+RvFhX2AE8tvg70v1d1mi4vQb7ZWMWJfkdNFlpR1j7RMJLbLIIydr30pn5/zBQr7W/VB5Anp6rFWvVSugZHp7D3pKl1fFPbnZQhnIy/8Ixpyy2Id41QSZRrIygTQ7gkAyNGZUx/dalOrVZ3mj/g3TiN/bkZ120zxzuAAAAAElFTkSuQmCC">
+        History
+      </h4>
+    </div>
+    
   </div>
 {% endblock %}
 {% block scripts %}

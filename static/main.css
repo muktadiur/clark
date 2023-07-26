@@ -17,7 +17,7 @@ body {
 #chat-container {
     overflow: auto;
     margin-top: 10px;
-    width: 70vw;
+    /* width: 70vw; */
     padding-bottom: 50px;
 }
 
@@ -49,13 +49,18 @@ body {
 
 .menu {
     grid-area: menu;
+    margin-right: 30px;
+}
+
+.menur {
+    grid-area: menur;
 }
 
 .menu ul {
     list-style: square;
     line-height: 20px;
     padding-inline-start: 20px;
-    max-width: 300px;
+    /* max-width: 300px; */
 }
 
 .icon-file, .icon-upload, .icon-process {
@@ -89,7 +94,8 @@ input[type=file] {
 .question-input {
     padding: 16px;
     font-size: 18px;
-    min-width: 50vw;
+    /* min-width: 50vw; */
+    width: 80%;
     position: sticky;
     top: 30px;
     height: 20px;
@@ -122,10 +128,11 @@ input[type=file] {
     display: grid;
     grid-template-areas:
         'header header header header header header'
-        'menu main main main main main'
+        'menu main main main main menur'
         'footer footer footer footer footer footer';
     gap: 10px;
     padding: 10px;
+    grid-template-columns: 1.3fr .7fr 1fr 1fr 1fr 1fr;
 }
 
 .top-nav {
