@@ -1,7 +1,7 @@
 # Clark
 Chat with private documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace, and FastAPI.
 
-![Clark](static/images/clark.jpg)
+![Clark](static/images/clark.png)
 
 ## Installation
 
