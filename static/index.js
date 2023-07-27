@@ -2,14 +2,16 @@ class ChatLLM {
   constructor() {
     this.BASE_URL = "http://localhost:8000";
     this.chatContainer = document.querySelector("#chat-container");
-    this.filesContainer = document.querySelector('#filesContainer');
-    this.questionInput = document.querySelector('.question-input');
-    this.questionSpinner = document.querySelector('.question-spinner');
-    this.questionSpinnerMessage = document.querySelector('.question-spinner-message');
+    this.filesContainer = document.querySelector("#filesContainer");
+    this.questionInput = document.querySelector(".question-input");
+    this.questionSpinner = document.querySelector(".question-spinner");
+    this.questionSpinnerMessage = document.querySelector(
+      ".question-spinner-message"
+    );
     this.typingSpeed = 50;
     this.headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+      Accept: "application/json",
+      "Content-Type": "application/json",
     };
   }
 
@@ -30,10 +32,20 @@ class ChatLLM {
       } else {
         this.chatContainer.innerHTML += "<br>";
         index++;
-        return "done"
+        return "done";
       }
-    }
+    };
     typeMessage();
+  }
+
+
+  async removefile(fileName) {
+    let response = await fetch(`${this.BASE_URL}/delete_file/`, {
+      method: 'POST',
+      headers: this.headers,
+      data: JSON.stringify(fileName)
+    });
+    console.log(await response.json())
   }
 
   async loadFiles() {
@@ -42,9 +54,36 @@ class ChatLLM {
       const response = await fetch(`${this.BASE_URL}/files`);
       const files = await response.json();
       this.filesContainer.innerHTML = "";
-      files.forEach(file => {
-        this.filesContainer.innerHTML += `<li>${file}</li>`;
+      files.forEach((file) => {
+        this.filesContainer.innerHTML += `
+        <li>
+          <span class="file">${file}</span>
+          <button class="delete-button" style="display: none;">x</button>
+        </li>`;
       });
+      const listItems = this.filesContainer.getElementsByTagName("li");
+      for (let i = 0; i < listItems.length; i++) {
+        listItems[i].addEventListener("mouseover", function() {
+          this.getElementsByClassName("delete-button")[0].style.display = "inline-block";
+        });
+        listItems[i].addEventListener("mouseout", function() {
+          this.getElementsByClassName("delete-button")[0].style.display = "none";
+        });
+        self = this;
+        listItems[i].addEventListener("click", async function() {
+          let fileName = this.querySelector('span.file').textContent;
+          try {
+            await fetch(`${self.BASE_URL}/delete_file/`, {
+              method: 'POST',
+              headers: self.headers,
+              body: JSON.stringify({"file_name": fileName})
+            });
+            self.loadFiles();
+          } catch(error) {
+            console.log(error);
+          }
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -74,17 +113,17 @@ class ChatLLM {
   }
 
   async askQuestion(query) {
-    await this.displayMessage('You', query);
+    await this.displayMessage("You", query);
     this.clearQuestionInput();
     this.disableQuestionInput();
     try {
       const response = await fetch(`${this.BASE_URL}/ask`, {
-        method: 'POST',
+        method: "POST",
         headers: this.headers,
-        body: JSON.stringify({"message": query})
+        body: JSON.stringify({ message: query }),
       });
       let answer = await response.json();
-      await this.displayMessage('Clark', answer.content);
+      await this.displayMessage("Clark", answer.content);
       this.enableQuestionInput();
     } catch (error) {
       console.error(error);
@@ -96,8 +135,8 @@ class ChatLLM {
     this.showSpinner();
     try {
       await fetch(`${this.BASE_URL}/process`, {
-        method: 'POST',
-        headers: this.headers
+        method: "POST",
+        headers: this.headers,
       });
       this.enableQuestionInput();
     } catch (error) {
@@ -108,14 +147,14 @@ class ChatLLM {
 
   async uploadFiles(event) {
     const formData = new FormData();
-    Array.from(event.target.files).forEach(file => {
-      formData.append('files', file);
+    Array.from(event.target.files).forEach((file) => {
+      formData.append("files", file);
     });
     try {
       await fetch(`${this.BASE_URL}/uploadfiles`, {
         method: "post",
         enctype: "multipart/form-data",
-        body: formData
+        body: formData,
       });
       this.loadFiles();
     } catch (error) {

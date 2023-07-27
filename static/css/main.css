@@ -60,7 +60,7 @@ body {
     list-style: square;
     line-height: 20px;
     padding-inline-start: 20px;
-    /* max-width: 300px; */
+    max-width: 90%;
 }
 
 .icon-file, .icon-upload, .icon-process {
@@ -222,4 +222,9 @@ input[type=file] {
 .ask-btn:hover {
     color: var(--green-color);
     cursor: pointer;
+}
+
+.delete-button {
+    cursor: pointer;
+    color:red;
 }

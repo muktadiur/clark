@@ -80,7 +80,7 @@ docker run -p 8000:8000 -it clark
 │   ├── base.html
 │   ├── home.html
 │   ├── images
-│   │   ├── clark.jpg
+│   │   ├── clark.png
 │   │   └── favicon.ico
 │   ├── index.html
 │   ├── index.js

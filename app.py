@@ -1,8 +1,10 @@
 import sys
+import os
 import glob
 import uvicorn
+import logging
 from pathlib import Path
-from fastapi import FastAPI, Request, UploadFile
+from fastapi import FastAPI, Request, UploadFile, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
@@ -24,6 +26,10 @@ embeddings_to_use: str = sys.argv[1] if len(sys.argv) > 1 else None
 
 class Question(BaseModel):
     message: str
+
+
+class File(BaseModel):
+    file_name: str
 
 
 @app.get("/")
@@ -82,6 +88,24 @@ async def uploadfiles(files: list[UploadFile]) -> dict[str, str]:
             f.write(await file.read())
 
     return {"status": "success"}
+
+
+@app.post("/delete_file/", tags=["Files"], responses={
+    200: {"description": "File deleted successfully"},
+    404: {"description": "File not found"}
+})
+async def delete_file(file: File) -> dict[str, str]:
+    if os.path.exists(file.file_name):
+        try:
+            os.remove(file.file_name)
+            logging.info(f"File {file.file_name} deleted successfully")
+            return {"status": "success"}
+        except OSError as e:
+            logging.error(f"Error deleting file {file.file_name}: {str(e)}")
+            raise HTTPException(status_code=500, detail="Error deleting file")
+    else:
+        logging.warning(f"File {file.file_name} not found")
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 @app.post("/process/", tags=["LLM"])
