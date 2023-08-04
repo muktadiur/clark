@@ -108,7 +108,6 @@ input[type=file] {
 }
 
 .question-spinner {
-    top: 15px;
     margin-left: 20px;
     width: 40px;
 }
@@ -214,7 +213,7 @@ input[type=file] {
     color: var(--gray-color);
     position: relative;
     left: -53px;
-    top: 3px;
+    top: -15px;
     border: none;
     background-color: transparent;
 }

@@ -28,7 +28,7 @@
     <div class="main">
       <div>
         <div class="question-spinner-message">Processing data. Please wait...</div>
-        <input class="question-input" placeholder="Ask your query" name="question" disabled>
+        <textarea class="question-input" placeholder="Ask your query" name="question" rows="2" cols="100" disabled></textarea>
         <button onclick="chatLLM.ask()" type="button" class="ask-btn">&#10148;</button>
         <img class="question-spinner" src="{{url_for('static', path='spinner.gif')}}">
         <div id="chat-container"></div>
@@ -40,7 +40,7 @@
         History
       </h4>
     </div>
-    
+
   </div>
 {% endblock %}
 {% block scripts %}

@@ -8,17 +8,20 @@ class ChatLLM {
     this.questionSpinnerMessage = document.querySelector(
       ".question-spinner-message"
     );
-    this.typingSpeed = 50;
     this.headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
   }
 
-  async displayMessage(actor, message) {
+  async displayMessage(actor, message, typingSpeed=20) {
     let index = 0;
     let currentMessage = `${actor}: ${message}`;
     this.chatContainer.innerHTML += "<br>";
+    if (typingSpeed === 0) {
+      this.chatContainer.innerHTML += currentMessage + "<br>";
+      return;
+    }
     const typeMessage = () => {
       if (index < currentMessage.length) {
         const ch = currentMessage[index];
@@ -28,7 +31,7 @@ class ChatLLM {
           this.chatContainer.innerHTML += currentMessage[index];
         }
         index++;
-        setTimeout(typeMessage, this.typingSpeed);
+        setTimeout(typeMessage, typingSpeed);
       } else {
         this.chatContainer.innerHTML += "<br>";
         index++;
@@ -113,7 +116,8 @@ class ChatLLM {
   }
 
   async askQuestion(query) {
-    await this.displayMessage("You", query);
+    let typingSpeed = query.length > 300 ? 0 : 1;
+    await this.displayMessage("You", query, typingSpeed);
     this.clearQuestionInput();
     this.disableQuestionInput();
     try {
