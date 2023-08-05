@@ -1,5 +1,5 @@
 # Clark
-Chat with private documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI/HuggingFace, and FastAPI.
+Chat with private documents(CSV, pdf, docx, doc, txt) using LangChain, OpenAI, HuggingFace, GPT4ALL, and FastAPI.
 
 ![Clark](static/images/clark.png)
 
@@ -18,15 +18,11 @@ Rename `.env.example` to `.env` and update the OPENAI_API_KEY [OpenAI API key](h
 
 Place your own data (CSV, pdf, docx, doc, txt) into `data/` folder.
 
-## Run 
+## Run
 
 ### Console
 ```
-python console.py  # to use openai embeddings
-
-python console.py hf  # to use huggingface embeddings
-
-python console.py huggingface   # to use huggingface embeddings
+python console.py # default: openai
 
 ```
 
@@ -38,16 +34,12 @@ Clark: The capital of Uzbekistan is Tashkent.
 You: exit
 ```
 
-### Web 
+### Web
 ```
-python app.py  # to use openai embeddings
+python app.py  # default: openai
 
-python app.py hf  # to use huggingface embeddings
-
-python app.py huggingface   # to use huggingface embeddings
-
-URL: 
-http://127.0.0.1:8000/  
+URL:
+http://127.0.0.1:8000/
 http://127.0.0.1:8000/docs
 http://127.0.0.1:8000/redoc
 ```
@@ -58,6 +50,25 @@ docker build -t clark .
 docker run -p 8000:8000 -it clark
 ```
 
+### To use HuggingFace
+```
+Change the CONVERSATION_ENGINE: from `openai`: to `hf` in the `.env` file.
+```
+
+### To use GPT4ALL (Slow)
+```
+mkdir models
+cd models
+wget https://huggingface.co/nomic-ai/gpt4all-falcon-ggml/resolve/main/ggml-model-gpt4all-falcon-q4_0.bin
+
+Change the CONVERSATION_ENGINE: from `openai`: to `gpt4all` in the `.env` file.
+Now read your documents locally using an LLM.
+
+Note: gpt4all performance is slow for now. The average response time is 50 seconds.
+
+```
+
+
 ## Project structure
 ```
 .
@@ -65,29 +76,36 @@ docker run -p 8000:8000 -it clark
 ├── LICENSE
 ├── README.md
 ├── app.py
+├── clark
+│   ├── __init__.py
+│   ├── base.py
+│   ├── document.py
+│   ├── gpt4all.py
+│   ├── helpers.py
+│   ├── hf.py
+│   └── openai.py
 ├── console.py
 ├── data
 │   └── sample_capitals.csv
-├── document
-│   ├── __init__.py
-│   ├── conversation.py
-│   └── utils.py
 ├── requirements.txt
 ├── static
 │   ├── auth
 │   │   ├── login.html
 │   │   └── signup.html
 │   ├── base.html
+│   ├── css
+│   │   ├── font-awesome.min.css
+│   │   └── main.css
 │   ├── home.html
 │   ├── images
 │   │   ├── clark.png
 │   │   └── favicon.ico
 │   ├── index.html
 │   ├── index.js
-│   ├── main.css
+│   ├── js
 │   └── spinner.gif
 └── test_api.py
 
-6 directories, 21 files
+8 directories, 26 files
 ```
 

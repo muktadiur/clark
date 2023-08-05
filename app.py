@@ -1,4 +1,3 @@
-import sys
 import os
 import glob
 import uvicorn
@@ -10,8 +9,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from document.utils import process_documents
-from document.conversation import DocumentConversation
+from clark.helpers import get_chain
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -20,8 +18,6 @@ templates = Jinja2Templates(directory="static")
 load_dotenv()
 
 chain = None
-
-embeddings_to_use: str = sys.argv[1] if len(sys.argv) > 1 else None
 
 
 class Question(BaseModel):
@@ -112,12 +108,7 @@ async def delete_file(file: File) -> dict[str, str]:
 async def process_files() -> dict[str, str]:
     global chain
 
-    conversation = DocumentConversation(
-        embeddings_to_use=embeddings_to_use
-    )
-    texts = process_documents()
-    chain = conversation.get_chain(texts=texts)
-
+    chain = get_chain()
     return {"status": "success"}
 
 

@@ -1,6 +1,6 @@
 from typing import List
 from langchain.schema import Document
-from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import (
     PyPDFDirectoryLoader,
     DirectoryLoader
@@ -43,7 +43,7 @@ def get_documents() -> List[Document]:
 
 def get_texts(
     documents: List[Document],
-    text_splitter: CharacterTextSplitter
+    text_splitter: RecursiveCharacterTextSplitter
 ) -> List[str]:
     """
     Splits the content of the documents into chunks using
@@ -61,8 +61,8 @@ def process_documents() -> List[str]:
     Process all documents in the data directory and
     return their content as chunks of text.
     """
-    text_splitter = CharacterTextSplitter(
-        separator="\n",
+    text_splitter = RecursiveCharacterTextSplitter(
+        separators=[" ", ",", "\n"],
         chunk_size=1000,
         chunk_overlap=200,
         length_function=len

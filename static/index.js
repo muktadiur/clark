@@ -116,7 +116,7 @@ class ChatLLM {
   }
 
   async askQuestion(query) {
-    let typingSpeed = query.length > 300 ? 0 : 1;
+    let typingSpeed = query.length > 300 ? 0 : 3;
     await this.displayMessage("You", query, typingSpeed);
     this.clearQuestionInput();
     this.disableQuestionInput();
