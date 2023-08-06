@@ -14,41 +14,55 @@ class ChatLLM {
     };
   }
 
-  async displayMessage(actor, message, typingSpeed=20) {
+  async displayMessage(actor, message, typingSpeed = 20) {
     let index = 0;
     let currentMessage = `${actor}: ${message}`;
     this.chatContainer.innerHTML += "<br>";
-    if (typingSpeed === 0) {
-      this.chatContainer.innerHTML += currentMessage + "<br>";
-      return;
-    }
-    const typeMessage = () => {
-      if (index < currentMessage.length) {
-        const ch = currentMessage[index];
-        if (ch.charCodeAt(0) === 10) {
-          this.chatContainer.innerHTML += "<br>";
+
+    return new Promise((resolve) => {
+      const typeMessage = () => {
+        if (index < currentMessage.length) {
+          const ch = currentMessage[index];
+          if (ch.charCodeAt(0) === 10) {
+            this.chatContainer.innerHTML += "<br>";
+          } else {
+            this.chatContainer.innerHTML += currentMessage[index];
+          }
+          index++;
+          setTimeout(typeMessage, typingSpeed);
         } else {
-          this.chatContainer.innerHTML += currentMessage[index];
+          this.chatContainer.innerHTML += "<br>";
+          resolve();
         }
-        index++;
-        setTimeout(typeMessage, typingSpeed);
-      } else {
-        this.chatContainer.innerHTML += "<br>";
-        index++;
-        return "done";
-      }
-    };
-    typeMessage();
+      };
+      typeMessage();
+    });
   }
 
+  async askQuestion(query) {
+    await this.displayMessage("You", query, 5);
+
+    try {
+      const response = await fetch(`${this.BASE_URL}/ask`, {
+        method: "POST",
+        headers: this.headers,
+        body: JSON.stringify({ message: query }),
+      });
+      let answer = await response.json();
+      await this.displayMessage("Clark", answer.content);
+      this.enableQuestionInput();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   async removefile(fileName) {
     let response = await fetch(`${this.BASE_URL}/delete_file/`, {
-      method: 'POST',
+      method: "POST",
       headers: this.headers,
-      data: JSON.stringify(fileName)
+      data: JSON.stringify(fileName),
     });
-    console.log(await response.json())
+    console.log(await response.json());
   }
 
   async loadFiles() {
@@ -66,23 +80,25 @@ class ChatLLM {
       });
       const listItems = this.filesContainer.getElementsByTagName("li");
       for (let i = 0; i < listItems.length; i++) {
-        listItems[i].addEventListener("mouseover", function() {
-          this.getElementsByClassName("delete-button")[0].style.display = "inline-block";
+        listItems[i].addEventListener("mouseover", function () {
+          this.getElementsByClassName("delete-button")[0].style.display =
+            "inline-block";
         });
-        listItems[i].addEventListener("mouseout", function() {
-          this.getElementsByClassName("delete-button")[0].style.display = "none";
+        listItems[i].addEventListener("mouseout", function () {
+          this.getElementsByClassName("delete-button")[0].style.display =
+            "none";
         });
         self = this;
-        listItems[i].addEventListener("click", async function() {
-          let fileName = this.querySelector('span.file').textContent;
+        listItems[i].addEventListener("click", async function () {
+          let fileName = this.querySelector("span.file").textContent;
           try {
             await fetch(`${self.BASE_URL}/delete_file/`, {
-              method: 'POST',
+              method: "POST",
               headers: self.headers,
-              body: JSON.stringify({"file_name": fileName})
+              body: JSON.stringify({ file_name: fileName }),
             });
             self.loadFiles();
-          } catch(error) {
+          } catch (error) {
             console.log(error);
           }
         });
@@ -113,25 +129,6 @@ class ChatLLM {
     if (!this.questionSpinner || !this.questionSpinnerMessage) return;
     this.questionSpinnerMessage.style.display = "block";
     this.questionSpinner.style.display = "inline-block";
-  }
-
-  async askQuestion(query) {
-    let typingSpeed = query.length > 300 ? 0 : 3;
-    await this.displayMessage("You", query, typingSpeed);
-    this.clearQuestionInput();
-    this.disableQuestionInput();
-    try {
-      const response = await fetch(`${this.BASE_URL}/ask`, {
-        method: "POST",
-        headers: this.headers,
-        body: JSON.stringify({ message: query }),
-      });
-      let answer = await response.json();
-      await this.displayMessage("Clark", answer.content);
-      this.enableQuestionInput();
-    } catch (error) {
-      console.error(error);
-    }
   }
 
   async processFiles() {
