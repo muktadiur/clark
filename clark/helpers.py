@@ -1,12 +1,15 @@
 import os
+from typing import List
+
 from langchain.chains.conversational_retrieval.base import (
     BaseConversationalRetrievalChain
 )
+
 from clark.base import BaseConversation
-from clark.gpt4all import GPT4AllConversation
-from clark.openai import OpenAIConversation
-from clark.hf import HFConversation
 from clark.document import process_documents
+from clark.gpt4all import GPT4AllConversation
+from clark.hf import HFConversation
+from clark.openai import OpenAIConversation
 
 
 def get_converstation() -> BaseConversation:
@@ -19,7 +22,14 @@ def get_converstation() -> BaseConversation:
     return OpenAIConversation()
 
 
+def create_vectors() -> None:
+    texts: List[str] = process_documents()
+    get_converstation().create_store(texts=texts)
+
+
 def get_chain() -> BaseConversationalRetrievalChain:
-    conversation = get_converstation()
-    texts = process_documents()
-    return conversation.get_chain(texts=texts)
+    try:
+        return get_converstation().get_chain()
+    except FileNotFoundError:
+        create_vectors()
+        return get_converstation().get_chain()

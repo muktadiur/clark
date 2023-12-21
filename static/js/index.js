@@ -41,9 +41,9 @@ class ChatLLM {
 
   async askQuestion(query) {
     await this.displayMessage("You", query, 5);
-
+    this.clearQuestionInput();
     try {
-      const response = await fetch(`${this.BASE_URL}/ask`, {
+      const response = await fetch(`${this.BASE_URL}/completions`, {
         method: "POST",
         headers: this.headers,
         body: JSON.stringify({ message: query }),
@@ -56,14 +56,14 @@ class ChatLLM {
     }
   }
 
-  async removefile(fileName) {
-    let response = await fetch(`${this.BASE_URL}/delete_file/`, {
-      method: "POST",
-      headers: this.headers,
-      data: JSON.stringify(fileName),
-    });
-    console.log(await response.json());
-  }
+  // async removeFile(fileName) {
+  //   let response = await fetch(`${this.BASE_URL}/delete_file/`, {
+  //     method: "POST",
+  //     headers: this.headers,
+  //     data: JSON.stringify(fileName),
+  //   });
+  //   console.log(await response.json());
+  // }
 
   async loadFiles() {
     if (!this.filesContainer) return;
@@ -139,11 +139,15 @@ class ChatLLM {
         method: "POST",
         headers: this.headers,
       });
-      this.enableQuestionInput();
+      setTimeout(() => {
+        this.hideSpinner();
+        this.enableQuestionInput();
+      }, 5000)
     } catch (error) {
       console.error(error);
     }
-    this.hideSpinner();
+
+
   }
 
   async uploadFiles(event) {
@@ -152,7 +156,7 @@ class ChatLLM {
       formData.append("files", file);
     });
     try {
-      await fetch(`${this.BASE_URL}/uploadfiles`, {
+      await fetch(`${this.BASE_URL}/upload_files`, {
         method: "post",
         enctype: "multipart/form-data",
         body: formData,

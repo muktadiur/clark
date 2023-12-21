@@ -1,15 +1,16 @@
 import os
 from typing import Optional
+
 from langchain import FAISS
-from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.llms import GPT4All
-from langchain.embeddings.base import Embeddings
-from langchain.embeddings import GPT4AllEmbeddings
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
+# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains.conversational_retrieval.base import (
     BaseConversationalRetrievalChain
 )
+from langchain.embeddings import GPT4AllEmbeddings
+from langchain.embeddings.base import Embeddings
+from langchain.llms import GPT4All
+from langchain.memory import ConversationBufferMemory
 
 from clark.base import BaseConversation
 
@@ -32,23 +33,15 @@ class GPT4AllConversation(BaseConversation):
             )
         return self._embeddings
 
-    def get_vector_store(self, texts: list) -> FAISS:
-        """Create a vector store from the provided texts."""
-
-        return FAISS.from_texts(
-            texts=texts,
-            embedding=self.embeddings
-        )
-
     def get_conversation_chain(
         self,
-        vector_store: FAISS
+        store: FAISS
     ) -> BaseConversationalRetrievalChain:
         """Create a conversation chain from the provided vector store."""
 
         llm = GPT4All(
             model=self.default_model,
-            callbacks=[StreamingStdOutCallbackHandler()],
+            # callbacks=[StreamingStdOutCallbackHandler()],
             n_threads=8,
             embedding=True
         )
@@ -59,6 +52,6 @@ class GPT4AllConversation(BaseConversation):
         )
         return ConversationalRetrievalChain.from_llm(
             llm=llm,
-            retriever=vector_store.as_retriever(),
+            retriever=store.as_retriever(),
             memory=memory
         )

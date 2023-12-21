@@ -1,14 +1,14 @@
 from typing import Optional
 
-from langchain.chat_models import ChatOpenAI
-from langchain.vectorstores import FAISS
-from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from langchain.embeddings.base import Embeddings
-from langchain.embeddings import OpenAIEmbeddings
 from langchain.chains.conversational_retrieval.base import (
     BaseConversationalRetrievalChain
 )
+from langchain.chat_models import ChatOpenAI
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.embeddings.base import Embeddings
+from langchain.memory import ConversationBufferMemory
+from langchain.vectorstores import FAISS
 
 from clark.base import BaseConversation
 
@@ -31,17 +31,9 @@ class OpenAIConversation(BaseConversation):
             )
         return self._embeddings
 
-    def get_vector_store(self, texts: list) -> FAISS:
-        """Create a vector store from the provided texts."""
-
-        return FAISS.from_texts(
-            texts=texts,
-            embedding=self.embeddings
-        )
-
     def get_conversation_chain(
         self,
-        vector_store: FAISS
+        store: FAISS
     ) -> BaseConversationalRetrievalChain:
         """Create a conversation chain from the provided vector store."""
 
@@ -52,6 +44,6 @@ class OpenAIConversation(BaseConversation):
         )
         return ConversationalRetrievalChain.from_llm(
             llm=llm,
-            retriever=vector_store.as_retriever(),
+            retriever=store.as_retriever(),
             memory=memory
         )

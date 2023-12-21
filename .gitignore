@@ -12,4 +12,9 @@ pyvenv.cfg
 
 models/
 
+faiss_store.pkl
+docs.index
+.idea/
+clark.log
+
 

@@ -1,10 +1,12 @@
+import os
 from typing import List
-from langchain.schema import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from langchain.document_loaders import (
     PyPDFDirectoryLoader,
     DirectoryLoader
 )
+from langchain.schema import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 DATA_DIRECTORY = 'data/'
 FILE_GLOBS = [
@@ -63,8 +65,9 @@ def process_documents() -> List[str]:
     """
     text_splitter = RecursiveCharacterTextSplitter(
         separators=[" ", ",", "\n"],
-        chunk_size=1000,
-        chunk_overlap=200,
+        chunk_size=int(os.getenv("CHUNK_SIZE", 2000)),
+        chunk_overlap=int(os.getenv("CHUNK_OVERLAP", 100)),
         length_function=len
     )
-    return get_texts(get_documents(), text_splitter)
+    documents: List[Document] = get_documents()
+    return get_texts(documents, text_splitter)

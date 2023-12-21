@@ -18,23 +18,25 @@ def test_files() -> None:
     assert isinstance(response.json(), list)
 
 
-@mock.patch("app.process_documents")
-def test_process_files(mock_process_documents) -> None:
-    mock_process_documents.return_value = ["text1", "text2", "text3"]
+@mock.patch("app.create_vectors")
+def test_process_files(create_vectors) -> None:
+    create_vectors.return_value = ["text1", "text2", "text3"]
 
     response = client.post("/process/")
     assert response.status_code == 200
     assert response.json()["status"] == "success"
 
-    mock_process_documents.assert_called_once()
+    create_vectors.assert_called_once()
 
 
-@mock.patch("app.chain")
-def test_ask(mock_chain) -> None:
+@mock.patch("app.get_chain")
+def test_completions(mock_get_chain) -> None:
+    mock_chain = mock.Mock()
     mock_chain.run.return_value = "Canada's capital is Ottawa"
+    mock_get_chain.return_value = mock_chain
 
     question = {"message": "Capital of Canada?"}
-    response = client.post("/ask/", json=question)
+    response = client.post("/completions/", json=question)
     assert response.status_code == 200
     assert "content" in response.json()
     assert response.json()["content"] == "Canada's capital is Ottawa"
