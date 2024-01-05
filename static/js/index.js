@@ -5,9 +5,6 @@ class ChatLLM {
     this.filesContainer = document.querySelector("#filesContainer");
     this.questionInput = document.querySelector(".question-input");
     this.questionSpinner = document.querySelector(".question-spinner");
-    this.questionSpinnerMessage = document.querySelector(
-      ".question-spinner-message"
-    );
     this.headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
@@ -32,8 +29,12 @@ class ChatLLM {
           setTimeout(typeMessage, typingSpeed);
         } else {
           this.chatContainer.innerHTML += "<br>";
+          this.clearQuestionInput();
+          this.enableQuestionInput();
+          this.hideSpinner();
           resolve();
         }
+        window.scrollTo(0, document.body.scrollHeight);
       };
       typeMessage();
     });
@@ -41,7 +42,8 @@ class ChatLLM {
 
   async askQuestion(query) {
     await this.displayMessage("You", query, 5);
-    this.clearQuestionInput();
+    this.disableQuestionInput();
+    this.showSpinner();
     try {
       const response = await fetch(`${this.BASE_URL}/completions`, {
         method: "POST",
@@ -50,7 +52,6 @@ class ChatLLM {
       });
       let answer = await response.json();
       await this.displayMessage("Clark", answer.content);
-      this.enableQuestionInput();
     } catch (error) {
       console.error(error);
     }
@@ -122,12 +123,10 @@ class ChatLLM {
 
   hideSpinner() {
     this.questionSpinner.style.display = "none";
-    this.questionSpinnerMessage.style.display = "none";
   }
 
   showSpinner() {
-    if (!this.questionSpinner || !this.questionSpinnerMessage) return;
-    this.questionSpinnerMessage.style.display = "block";
+    if (!this.questionSpinner) return;
     this.questionSpinner.style.display = "inline-block";
   }
 
@@ -169,7 +168,8 @@ class ChatLLM {
 
   load() {
     this.loadFiles();
-    this.processFiles();
+    this.hideSpinner();
+    this.enableQuestionInput();
     if (!this.questionInput) return;
     this.questionInput.addEventListener("keypress", (event) => {
       if (event.key === "Enter") {
@@ -179,7 +179,7 @@ class ChatLLM {
     });
   }
 
-  ask() {
+  completions() {
     this.askQuestion(this.questionInput.value);
   }
 
