@@ -1,16 +1,24 @@
 from typing import Optional
 
-from langchain.chains import ConversationalRetrievalChain
-from langchain.chains.conversational_retrieval.base import (
-    BaseConversationalRetrievalChain
-)
-from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.embeddings.base import Embeddings
-from langchain.memory import ConversationBufferMemory
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
+from langchain_core.embeddings import Embeddings
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables.base import Runnable
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from clark.base import BaseConversation
+
+_PROMPT = ChatPromptTemplate.from_template(
+    "Use the following context to answer the question. "
+    "If you don't know the answer, say you don't know.\n\n"
+    "Context: {context}\n\nQuestion: {question}"
+)
+
+
+def _format_docs(docs) -> str:
+    return "\n\n".join(d.page_content for d in docs)
 
 
 class OpenAIConversation(BaseConversation):
@@ -21,7 +29,7 @@ class OpenAIConversation(BaseConversation):
 
     @property
     def default_model(self) -> str:
-        return 'text-embedding-ada-002'
+        return "text-embedding-ada-002"
 
     @property
     def embeddings(self) -> Embeddings:
@@ -31,19 +39,12 @@ class OpenAIConversation(BaseConversation):
             )
         return self._embeddings
 
-    def get_conversation_chain(
-        self,
-        store: FAISS
-    ) -> BaseConversationalRetrievalChain:
-        """Create a conversation chain from the provided vector store."""
-
+    def get_conversation_chain(self, store: FAISS) -> Runnable:
+        retriever = store.as_retriever()
         llm = ChatOpenAI()
-        memory = ConversationBufferMemory(
-            memory_key="chat_history",
-            return_messages=True
-        )
-        return ConversationalRetrievalChain.from_llm(
-            llm=llm,
-            retriever=store.as_retriever(),
-            memory=memory
+        return (
+            RunnablePassthrough.assign(
+                context=lambda x: _format_docs(retriever.invoke(x["question"]))
+            )
+            | RunnablePassthrough.assign(answer=_PROMPT | llm | StrOutputParser())
         )

@@ -1,18 +1,26 @@
 import os
 from typing import Optional
 
-from langchain import FAISS
-from langchain.chains import ConversationalRetrievalChain
-# from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chains.conversational_retrieval.base import (
-    BaseConversationalRetrievalChain
-)
-from langchain.embeddings import GPT4AllEmbeddings
-from langchain.embeddings.base import Embeddings
-from langchain.llms import GPT4All
-from langchain.memory import ConversationBufferMemory
+from langchain_community.embeddings import GPT4AllEmbeddings
+from langchain_community.llms import GPT4All
+from langchain_community.vectorstores import FAISS
+from langchain_core.embeddings import Embeddings
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables.base import Runnable
 
 from clark.base import BaseConversation
+
+_PROMPT = ChatPromptTemplate.from_template(
+    "Use the following context to answer the question. "
+    "If you don't know the answer, say you don't know.\n\n"
+    "Context: {context}\n\nQuestion: {question}"
+)
+
+
+def _format_docs(docs) -> str:
+    return "\n\n".join(d.page_content for d in docs)
 
 
 class GPT4AllConversation(BaseConversation):
@@ -33,25 +41,12 @@ class GPT4AllConversation(BaseConversation):
             )
         return self._embeddings
 
-    def get_conversation_chain(
-        self,
-        store: FAISS
-    ) -> BaseConversationalRetrievalChain:
-        """Create a conversation chain from the provided vector store."""
-
-        llm = GPT4All(
-            model=self.default_model,
-            # callbacks=[StreamingStdOutCallbackHandler()],
-            n_threads=8,
-            embedding=True
-        )
-
-        memory = ConversationBufferMemory(
-            memory_key="chat_history",
-            return_messages=True
-        )
-        return ConversationalRetrievalChain.from_llm(
-            llm=llm,
-            retriever=store.as_retriever(),
-            memory=memory
+    def get_conversation_chain(self, store: FAISS) -> Runnable:
+        retriever = store.as_retriever()
+        llm = GPT4All(model=self.default_model, n_threads=8)
+        return (
+            RunnablePassthrough.assign(
+                context=lambda x: _format_docs(retriever.invoke(x["question"]))
+            )
+            | RunnablePassthrough.assign(answer=_PROMPT | llm | StrOutputParser())
         )

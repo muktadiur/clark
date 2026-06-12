@@ -4,45 +4,107 @@
     <title>Clark</title>
 {% endblock %}
 
+{% block bodyclass %}chat-page{% endblock %}
+
 {% block content %}
-<div class="container">
-    <div class="header"><h2>Clark</h2></div>
-    <div class="menu">
-      <h4>
-        <span class="icon-file">
-          <svg width="16px" height="16px" xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 24 24" width="24px" height="24px"><path d="M 6 2 C 4.9057453 2 4 2.9057453 4 4 L 4 20 C 4 21.094255 4.9057453 22 6 22 L 18 22 C 19.094255 22 20 21.094255 20 20 L 20 8 L 14 2 L 6 2 z M 6 4 L 13 4 L 13 9 L 18 9 L 18 20 L 6 20 L 6 4 z"/></svg>
-        </span>
-        Files
-        <span>
-          <label for="file">
-            <img class="icon-upload" title="Upload" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAA+UlEQVR4nO2YWwrCQAxFzyo64v5XYn/0SwWxupqIEKGUvpRRErkHQgfE6ZzctIjwfRqv1GyAq9dznZICXADzugNbkktYRpkN0PnBX9f+usswZqWXxM27/xJpep+FTqaMSNATIYNMmZAYioSWKTMSYyJhZc4LD/GYyPClcCIAB+A48yaaEsG/85TYkwCbEUmFSSQYSqQmtrLaFXtM0b5xn49Ze4Pdij1CiKTfwyIcAokE6yZKJFg3USLBuokSCdZNlEiwbqJEgnWTIIm0Cz/zf3IOC/LHgUnEUSKVMY2Wo9GqjGm0HI1WZUyj5Wi0KmMarX8dLQtS/L3IA0inVIWgq3THAAAAAElFTkSuQmCC">
-          </label>
-          <input id="file" name="file" type="file" accept=".pdf,.docx,.doc,.csv,.txt" onchange="chatLLM.handleFileChange(event)" multiple />
-        </span>
-        <span onclick="chatLLM.handleFileProcess()">
-          <img class="icon-process" title="Process" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAABU0lEQVR4nO2WO07DQBCGP5pQwA1IihC4Tqh53AByB18DUlIACggQjy4FSByCxxGABhoHKUaD/kgrK47WG69FkV9ayZZm/m/XWs8MLPTPdQGMgG/gFbgDekArNvgRyKYs20wfaDqxia9pUmCaVwNYATrADnAK/Cj2A+g6XswD91EbuArM/dMWMA5NBoYhuS3gUwmuQeyvRV/BlzmjUGjme9qRVjtnGFU97fCEmnUv8Hbd4DeB7d+sSkvAE3A8K+hLYCsMVWlZnumsoFRBFlyVVuVphyrUOfCgz1OVNgV+oWbtCXxTN/hM4IPYILfYdNSx0lyrLNS0sudbvSaxdk+u9X7ou+tQqJs7aTDvwFoIeFjylru5Yw0EhJ7Ymvt6YG6pBpMpoasxJtMlsfFmF9hQdWt4gEvBE+fZbuORU9Xyywa/qGoC+8At8KzR1vr2IDZ4IebRL6vhlB0Uewq2AAAAAElFTkSuQmCC">
-        </span>
-      </h4>
-      <ul id="filesContainer"></ul>
-    </div>
-    <div class="main">
-      <div class="question-container">
-        <!-- <div class="question-spinner-message">Processing data. Please wait...</div> -->
-        <textarea class="question-input" placeholder="Ask your query" name="question" rows="2" cols="100" disabled></textarea>
-        <button onclick="chatLLM.completions()" type="button" class="ask-btn">&#10148;</button>
-        <img class="question-spinner" src="{{url_for('static', path='spinner.gif')}}">
-      </div>
-      <div id="chat-container"></div>
-    </div>
-    <div class="menur">
-      <h4>
-        <img class="icon-file" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAADhElEQVR4nO2a3UtUQRjGf2mpK5GmkWZ1l2B5139Q0SepCd1lQiUU5ZVRXWVddWHedmP5TyRKkX1YF5VWRFmaZUVFHyTdqPiRsTHxHBhcd/fs7uzusXpg4LDvnGfmcebMvPOM8I+gDxjgL0BYxQ9WAnVAO9ADjAA/gFlgRs/DQLfq7ANKCIiQfOAAcA2Ys+r7Lb+AG0AjEMqGkAKgBfhk1ZkGbgOt+mtXaZSWqZjnjYqdBW4CU9b7X4HTQGGmhOwGXluxp8BRdTRRrAAOAQ8svveaomkTYkbhkvXbc2APsMRRW1uBhxZ/p8vR8UhXA/3WFDoFLMU9coBjwLg12hUuhXhTaRTYTPpRpRE3bb4DKlMltFeYZ8DaFDgSxXKtaObdj8D6JDgiOhGv3PPBkQxC2pS9aRZKt5C7PjiSRTEwKI7LZBGpCkH7z4R4aljEQgyOi+et3ylmNrxygickVwms4ToZr7JROgZMAusIlhCD7eL6rA06KppU8T7u4FII1u7fQAzc8lMpy0KOiO96rGVuVqUowEKKlCbNqc8R2K8Ge3EL10LQcSEcLUu+oOB5gi+kVZwXFwr2KFi/CITUi7NroeArBc0uGnQhm8RpPIAIfFOwzGGD2ywh5tkVVonz+0LBaQWNoeAKo5aQNw55861DXgRmFMxz1Fi5lnJPyAcyJGRMwVJHIobE91MidpGhqTXi6GO3RQw5TkA9VMf62LsVrCV5lFmHoGFXxkGM5ffqQsF2BY15FtSR8HBO7bQRQ2VvgEfCw51Ys6dEidiUHMAgjgRKFGMmjVj2y2H8ozmDIuwzkzHOo6JRlYwXmwhOZEgEluMZ88xUoGOkqbiF4GGn+vbFjwFxRpUH5MUGBTnWMddcacRFoaz9sK4LgoJmy3/27TjW6aVxGcrZRrWcHdOnvYm+3Gndg7g8wyeKYuCF+tKRDEGhjOOwNqC03vFFQUi+sunDk1T6UKH7Cc/rcpEZJzISfZZNuiZVwkpLzGAajsLRjrIvLREbXBFXWNNsQoZyOpbmXK1Ok9Z0Snkk5sPMzyvWie+RvFhX2AE8tvg70v1d1mi4vQb7ZWMWJfkdNFlpR1j7RMJLbLIIydr30pn5/zBQr7W/VB5Anp6rFWvVSugZHp7D3pKl1fFPbnZQhnIy/8Ixpyy2Id41QSZRrIygTQ7gkAyNGZUx/dalOrVZ3mj/g3TiN/bkZ120zxzuAAAAAElFTkSuQmCC">
-        History (Coming Soon..)
-      </h4>
+<div class="app">
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a class="brand" href="/">Clark<span class="brand-dot"></span></a>
     </div>
 
-  </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-head">
+        <span class="sidebar-section-title">Documents</span>
+        <label class="icon-btn" for="fileInput" title="Upload documents" aria-label="Upload documents">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>
+          </svg>
+        </label>
+        <input id="fileInput" name="file" type="file" accept=".pdf,.docx,.doc,.csv,.txt" multiple hidden />
+      </div>
+
+      <ul class="file-list" id="fileList"></ul>
+      <div class="file-empty" id="fileEmpty" hidden>
+        No documents yet.<br />Upload PDF, DOCX, CSV or TXT files to get started.
+      </div>
+
+      <button class="process-btn" id="processBtn" type="button">
+        <svg class="process-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>
+        </svg>
+        <span class="spinner" hidden></span>
+        <span class="process-label">Process documents</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-chip" title="{{ user.email }}">
+        <span class="user-avatar">{{ user.email[:1]|upper }}</span>
+        <span class="user-email">{{ user.email }}</span>
+      </div>
+      <a class="icon-btn" href="/auth/logout" title="Log out" aria-label="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>
+        </svg>
+      </a>
+    </div>
+  </aside>
+
+  <main class="chat">
+    <header class="chat-header">
+      <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Toggle sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+      <span class="chat-header-title">Clark</span>
+    </header>
+
+    <div class="chat-scroll" id="chatScroll">
+      <div class="chat-thread" id="chatThread">
+        <div class="welcome" id="welcome">
+          <div class="welcome-mark">✳</div>
+          <h1 class="welcome-title">How can I help you today?</h1>
+          <p class="welcome-subtitle">Ask anything about your uploaded documents.</p>
+          <div class="suggestions">
+            <button class="suggestion" type="button">Summarize my documents</button>
+            <button class="suggestion" type="button">What are the key points?</button>
+            <button class="suggestion" type="button">List the main topics covered</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="composer-wrap">
+      <form class="composer" id="composer">
+        <textarea
+          class="composer-input"
+          id="promptInput"
+          placeholder="Message Clark…"
+          rows="1"
+          autocomplete="off"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" type="submit" disabled aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19V5m0 0-6 6m6-6 6 6"/>
+          </svg>
+        </button>
+      </form>
+      <p class="composer-hint">
+        Clark answers from your documents and can make mistakes. Enter to send · Shift+Enter for a new line.
+      </p>
+    </div>
+  </main>
+
+</div>
+
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
 {% endblock %}
+
 {% block scripts %}
-  <script src="{{url_for('static', path='js/index.js')}}" defer></script>
+  <script src="{{url_for('static', path='js/index.js')}}?v=2" defer></script>
 {% endblock %}

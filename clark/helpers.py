@@ -1,9 +1,7 @@
 import os
 from typing import List
 
-from langchain.chains.conversational_retrieval.base import (
-    BaseConversationalRetrievalChain
-)
+from langchain_core.runnables.base import Runnable
 
 from clark.base import BaseConversation
 from clark.document import process_documents
@@ -27,7 +25,7 @@ def create_vectors() -> None:
     get_converstation().create_store(texts=texts)
 
 
-def get_chain() -> BaseConversationalRetrievalChain:
+def get_chain() -> Runnable:
     try:
         return get_converstation().get_chain()
     except FileNotFoundError:
