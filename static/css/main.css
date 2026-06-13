@@ -587,16 +587,24 @@ button {
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%;
     padding: 9px 10px;
+    border: none;
     border-radius: var(--radius-sm);
+    background: transparent;
+    font-family: inherit;
     font-size: 13.5px;
     color: var(--text);
+    text-align: left;
     text-decoration: none;
+    cursor: pointer;
     transition: background 0.15s ease;
 }
 
-.user-menu-item:hover {
+.user-menu-item:hover,
+.user-menu-item:focus-visible {
     background: rgba(31, 30, 29, 0.06);
+    outline: none;
 }
 
 .user-menu-item svg {
@@ -809,18 +817,106 @@ button {
 /* 6. Chat thread & messages
    -------------------------------------------------------------------------- */
 .chat-header {
-    display: none;
+    display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px 14px;
-    border-bottom: 1px solid var(--border);
+    /* border-bottom: 1px solid var(--border); */
     background: var(--bg);
+}
+
+/* hamburger is only needed on mobile where the sidebar is a drawer */
+.menu-btn {
+    display: none;
 }
 
 .chat-header-title {
     font-family: var(--font-serif);
     font-size: 18px;
     font-weight: 700;
+}
+
+/* ----- model selector ----- */
+
+.model-select {
+    position: relative;
+}
+
+.model-select-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.model-select-btn:hover {
+    background: rgba(31, 30, 29, 0.06);
+}
+
+.model-select-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+}
+
+.model-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 300px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 60;
+    animation: menu-in 0.15s ease;
+}
+
+.model-menu-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.model-menu-item:hover {
+    background: rgba(31, 30, 29, 0.06);
+}
+
+.model-menu-name {
+    font-weight: 500;
+}
+
+.model-menu-check {
+    width: 17px;
+    height: 17px;
+    color: var(--accent);
+    opacity: 0;
+}
+
+.model-menu-item--active .model-menu-check {
+    opacity: 1;
 }
 
 .chat-scroll {
@@ -1208,6 +1304,245 @@ button {
     }
 }
 
+/* settings modal
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(31, 30, 29, 0.45);
+    animation: overlay-in 0.15s ease;
+}
+
+/* the explicit display above otherwise overrides the `hidden` attribute */
+.modal-overlay[hidden] {
+    display: none;
+}
+
+@keyframes overlay-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    animation: menu-in 0.18s ease;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-title {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.modal-body {
+    padding: 8px 22px;
+    overflow-y: auto;
+}
+
+.setting-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.setting-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.setting-hint {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    line-height: 1.45;
+}
+
+.setting-control {
+    width: 240px;
+    flex-shrink: 0;
+    padding: 9px 11px;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.setting-control:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+select.setting-control {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e6b62' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 32px;
+}
+
+.setting-note {
+    margin: 16px 0 6px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.setting-note code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 4px;
+}
+
+/* profile modal */
+.profile-avatar {
+    width: 92px;
+    height: 92px;
+    margin: 12px auto 24px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    user-select: none;
+}
+
+.profile-field {
+    padding: 9px 14px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.profile-field:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.profile-field-label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.profile-field-input {
+    width: 100%;
+    padding: 2px 0 0;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.profile-note {
+    text-align: center;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--border);
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 9px 18px;
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--text);
+    color: #fff;
+    border: 1px solid var(--text);
+}
+
+.btn-primary:hover {
+    background: #3a3835;
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+}
+
+.btn-secondary:hover {
+    background: rgba(31, 30, 29, 0.06);
+}
+
+@media (max-width: 600px) {
+    .setting-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .setting-control {
+        width: 100%;
+    }
+}
+
 /* scrollbars (WebKit) */
 .chat-scroll::-webkit-scrollbar,
 .file-list::-webkit-scrollbar,
@@ -1262,6 +1597,10 @@ button {
 
     .chat-header {
         display: flex;
+    }
+
+    .menu-btn {
+        display: inline-flex;
     }
 
     .history {

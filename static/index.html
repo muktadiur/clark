@@ -48,8 +48,8 @@
 
     <div class="sidebar-footer">
       <button class="user-chip" id="userMenuBtn" type="button" title="{{ user.email }}" aria-haspopup="menu" aria-expanded="false">
-        <span class="user-avatar">{{ user.email[:1]|upper }}</span>
-        <span class="user-email">{{ user.email }}</span>
+        <span class="user-avatar" id="userChipAvatar">{{ initials }}</span>
+        <span class="user-email" id="userChipName">{{ profile_name }}</span>
         <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="m6 14 6-6 6 6"/>
         </svg>
@@ -57,12 +57,25 @@
 
       <div class="user-menu" id="userMenu" role="menu" hidden>
         <div class="user-menu-header">
-          <span class="user-avatar">{{ user.email[:1]|upper }}</span>
+          <span class="user-avatar" id="userMenuAvatar">{{ initials }}</span>
           <div class="user-menu-id">
-            <div class="user-menu-email">{{ user.email }}</div>
-            <div class="user-menu-plan">Signed in</div>
+            <div class="user-menu-email" id="userMenuName">{{ profile_name }}</div>
+            <div class="user-menu-plan">{{ user.email }}</div>
           </div>
         </div>
+        <div class="user-menu-divider"></div>
+        <button class="user-menu-item" id="profileBtn" type="button" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>
+          </svg>
+          Profile
+        </button>
+        <button class="user-menu-item" id="settingsBtn" type="button" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+          Settings
+        </button>
         <div class="user-menu-divider"></div>
         <a class="user-menu-item" href="/auth/logout" role="menuitem">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -81,7 +94,16 @@
           <path d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
       </button>
-      <span class="chat-header-title">Clark</span>
+
+      <div class="model-select" id="modelSelect">
+        <button class="model-select-btn" id="modelSelectBtn" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span class="model-select-name" id="modelSelectName">Clark</span>
+          <svg class="model-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="model-menu" id="modelMenu" role="menu" hidden></div>
+      </div>
     </header>
 
     <button class="icon-btn history-toggle" id="historyToggle" type="button" title="Toggle chat history" aria-label="Toggle chat history">
@@ -150,9 +172,119 @@
 
 </div>
 
+<div class="modal-overlay" id="settingsOverlay" hidden>
+  <div class="modal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-header">
+      <h2 class="modal-title" id="settingsTitle">Settings</h2>
+      <button class="icon-btn" id="settingsClose" type="button" aria-label="Close settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="setting-row">
+        <div class="setting-label">
+          <span class="setting-name">Provider</span>
+          <span class="setting-hint">Where chat completions are sent.</span>
+        </div>
+        <select class="setting-control" id="providerSelect">
+          <option value="openai">OpenAI</option>
+          <option value="ollama">Ollama (local)</option>
+          <option value="vllm">vLLM (local)</option>
+        </select>
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span class="setting-name">Base URL</span>
+          <span class="setting-hint">OpenAI-compatible endpoint.</span>
+        </div>
+        <input class="setting-control" id="baseUrlInput" type="text" autocomplete="off"
+               placeholder="https://api.openai.com/v1" />
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span class="setting-name">API key</span>
+          <span class="setting-hint">Stored on your server. Leave blank to keep the saved key.</span>
+        </div>
+        <input class="setting-control" id="apiKeyInput" type="password" autocomplete="off"
+               placeholder="sk-…" />
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span class="setting-name">Models</span>
+          <span class="setting-hint">Comma-separated. These fill the model picker.</span>
+        </div>
+        <input class="setting-control" id="modelsInput" type="text" autocomplete="off"
+               placeholder="gpt-4o, gpt-4o-mini, gpt-3.5-turbo" />
+      </div>
+
+      <div class="setting-row">
+        <div class="setting-label">
+          <span class="setting-name">Default model</span>
+          <span class="setting-hint">Selected when a chat starts.</span>
+        </div>
+        <input class="setting-control" id="defaultModelInput" type="text" autocomplete="off"
+               placeholder="gpt-4o-mini" />
+      </div>
+
+      <p class="setting-note">
+        Document embeddings always use OpenAI (your <code>OPENAI_API_KEY</code>), independent of this setting.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" id="settingsCancel" type="button">Cancel</button>
+      <button class="btn-primary" id="settingsSave" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="profileOverlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <div class="modal-header">
+      <h2 class="modal-title" id="profileTitle">Edit profile</h2>
+      <button class="icon-btn" id="profileClose" type="button" aria-label="Close profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="profile-avatar" id="profileAvatar">{{ initials }}</div>
+
+      <div class="profile-field">
+        <label class="profile-field-label" for="displayNameInput">Display name</label>
+        <input class="profile-field-input" id="displayNameInput" type="text"
+               autocomplete="off" maxlength="60" placeholder="Your name" />
+      </div>
+
+      <div class="profile-field">
+        <label class="profile-field-label" for="usernameInput">Username</label>
+        <input class="profile-field-input" id="usernameInput" type="text"
+               autocomplete="off" maxlength="50" placeholder="username" />
+      </div>
+
+      <p class="setting-note profile-note">
+        Your display name and initials appear in the sidebar.
+      </p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" id="profileCancel" type="button">Cancel</button>
+      <button class="btn-primary" id="profileSave" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{url_for('static', path='js/index.js')}}?v=5" defer></script>
+  <script src="{{url_for('static', path='js/index.js')}}?v=9" defer></script>
 {% endblock %}

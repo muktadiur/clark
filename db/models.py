@@ -12,6 +12,8 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     email: Mapped[str] = mapped_column(String, unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String, nullable=False)
+    display_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    username: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
@@ -27,6 +29,10 @@ class UserSettings(Base):
     anthropic_api_key: Mapped[str | None] = mapped_column(String, nullable=True)
     huggingfacehub_api_token: Mapped[str | None] = mapped_column(String, nullable=True)
     gpt4all_model_path: Mapped[str | None] = mapped_column(String, nullable=True)
+    # OpenAI-compatible chat config (covers OpenAI / Ollama / vLLM).
+    base_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    chat_models: Mapped[str | None] = mapped_column(String, nullable=True)  # comma-separated
+    default_model: Mapped[str | None] = mapped_column(String, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )

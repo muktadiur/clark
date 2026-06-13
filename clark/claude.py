@@ -1,12 +1,13 @@
 from typing import Optional
 
+from langchain_anthropic import ChatAnthropic
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.embeddings import Embeddings
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.runnables.base import Runnable
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
 from clark.base import BaseConversation
 
@@ -21,45 +22,31 @@ def _format_docs(docs) -> str:
     return "\n\n".join(d.page_content for d in docs)
 
 
-class OpenAIConversation(BaseConversation):
+class ClaudeConversation(BaseConversation):
 
     def __init__(
-        self,
-        model_name: Optional[str] = None,
-        chat_model: Optional[str] = None,
-        base_url: Optional[str] = None,
-        api_key: Optional[str] = None,
+        self, model_name: Optional[str] = None, api_key: Optional[str] = None
     ) -> None:
         self.model_name = model_name
-        self.chat_model = chat_model
-        # base_url/api_key route the *chat* LLM to an OpenAI-compatible server
-        # (OpenAI, Ollama, vLLM). Embeddings stay on OpenAI (env OPENAI_API_KEY).
-        self.base_url = base_url or None
-        self.api_key = api_key or None
+        self.api_key = api_key
         self._embeddings: Optional[Embeddings] = None
 
     @property
     def default_model(self) -> str:
-        return "text-embedding-ada-002"
+        return "claude-opus-4-8"
 
     @property
     def embeddings(self) -> Embeddings:
+        # Anthropic has no embeddings endpoint; embed locally so the Claude
+        # backend works with just an Anthropic API key.
         if self._embeddings is None:
-            self._embeddings = OpenAIEmbeddings(
-                model=self.model_name or self.default_model
-            )
+            self._embeddings = HuggingFaceEmbeddings()
         return self._embeddings
 
     def get_conversation_chain(self, store: FAISS) -> Runnable:
         retriever = store.as_retriever()
-        llm_kwargs = {}
-        if self.chat_model:
-            llm_kwargs["model"] = self.chat_model
-        if self.base_url:
-            llm_kwargs["base_url"] = self.base_url
-        if self.api_key:
-            llm_kwargs["api_key"] = self.api_key
-        llm = ChatOpenAI(**llm_kwargs)
+        kwargs = {"api_key": self.api_key} if self.api_key else {}
+        llm = ChatAnthropic(model=self.model_name or self.default_model, **kwargs)
         return (
             RunnablePassthrough.assign(
                 context=lambda x: _format_docs(retriever.invoke(x["question"]))

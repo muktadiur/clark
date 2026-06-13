@@ -10,7 +10,7 @@ faiss-cpu
 uvicorn
 fastapi
 jinja2
-unstructured
+unstructured[csv]
 tiktoken
 sentence-transformers
 pytest
