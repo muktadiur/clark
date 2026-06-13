@@ -264,6 +264,17 @@ button {
     display: flex;
     flex-direction: column;
     min-width: 0;
+    position: relative;
+}
+
+.history-toggle {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    z-index: 10;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
 }
 
 .icon-btn {
@@ -300,11 +311,14 @@ button {
     flex-shrink: 0;
     background: var(--bg-sidebar);
     border-right: 1px solid var(--border);
-    transition: transform 0.25s ease;
+    transition: transform 0.25s ease, width 0.25s ease;
 }
 
 .sidebar-header {
-    padding: 18px 20px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 10px 20px;
 }
 
 .brand {
@@ -473,10 +487,10 @@ button {
 }
 
 .sidebar-footer {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 12px 16px;
+    padding: 10px 12px;
     border-top: 1px solid var(--border);
 }
 
@@ -486,6 +500,109 @@ button {
     gap: 10px;
     flex: 1;
     min-width: 0;
+    padding: 8px 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.user-chip:hover,
+.user-chip[aria-expanded="true"] {
+    background: rgba(31, 30, 29, 0.07);
+}
+
+.user-chevron {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: var(--text-faint);
+    transition: transform 0.15s ease;
+}
+
+.user-chip[aria-expanded="true"] .user-chevron {
+    transform: rotate(180deg);
+}
+
+/* user popup menu */
+.user-menu {
+    position: absolute;
+    left: 12px;
+    bottom: calc(100% + 6px);
+    width: 248px;
+    padding: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 60;
+    animation: menu-in 0.15s ease;
+}
+
+@keyframes menu-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-menu-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+.user-menu-id {
+    min-width: 0;
+}
+
+.user-menu-email {
+    font-size: 13px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-menu-plan {
+    font-size: 11.5px;
+    color: var(--text-faint);
+}
+
+.user-menu-divider {
+    height: 1px;
+    margin: 4px 6px;
+    background: var(--border);
+}
+
+.user-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 13.5px;
+    color: var(--text);
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.user-menu-item:hover {
+    background: rgba(31, 30, 29, 0.06);
+}
+
+.user-menu-item svg {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
 }
 
 .user-avatar {
@@ -512,6 +629,181 @@ button {
 
 .sidebar-overlay {
     display: none;
+}
+
+/* history panel (right side) */
+.history {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    flex-shrink: 0;
+    background: var(--bg-sidebar);
+    border-left: 1px solid var(--border);
+    transition: margin-right 0.25s ease, transform 0.25s ease;
+}
+
+.history-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 6px 20px;
+}
+
+.history-actions {
+    display: flex;
+    gap: 2px;
+}
+
+.history-close {
+    display: none;
+}
+
+.history-list {
+    list-style: none;
+    flex: 1;
+    margin: 6px 0 0;
+    padding: 0 12px 12px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 9px 12px;
+    margin-bottom: 2px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease;
+}
+
+.history-item:hover {
+    background: rgba(31, 30, 29, 0.06);
+}
+
+.history-item--active {
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.history-item--active:hover {
+    background: var(--surface);
+}
+
+.history-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-item-title {
+    font-size: 13.5px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-item-date {
+    font-size: 11.5px;
+    color: var(--text-faint);
+}
+
+.history-delete {
+    border: none;
+    background: transparent;
+    color: var(--text-faint);
+    font-size: 12px;
+    line-height: 1;
+    padding: 4px 6px;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.history-item:hover .history-delete {
+    opacity: 1;
+}
+
+.history-delete:hover {
+    color: var(--danger);
+    background: rgba(192, 57, 43, 0.1);
+}
+
+.history-delete.confirm {
+    opacity: 1;
+    color: #fff;
+    background: var(--danger);
+    font-weight: 600;
+}
+
+.history-empty {
+    padding: 16px;
+    font-size: 13px;
+    color: var(--text-faint);
+    text-align: center;
+    line-height: 1.7;
+}
+
+@media (min-width: 769px) {
+    .history--hidden {
+        margin-right: -300px;
+    }
+
+    /* collapsed sidebar: narrow icon rail */
+    .sidebar--collapsed {
+        width: 64px;
+    }
+
+    .sidebar--collapsed .brand,
+    .sidebar--collapsed .sidebar-section-title,
+    .sidebar--collapsed .file-list,
+    .sidebar--collapsed .file-empty,
+    .sidebar--collapsed .process-label,
+    .sidebar--collapsed .user-email {
+        display: none;
+    }
+
+    .sidebar--collapsed .sidebar-header {
+        justify-content: center;
+        padding: 14px 8px 10px;
+    }
+
+    .sidebar--collapsed .sidebar-section {
+        padding: 8px;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .sidebar--collapsed .sidebar-section-head {
+        padding: 0;
+    }
+
+    .sidebar--collapsed .process-btn {
+        width: 36px;
+        height: 36px;
+        margin-top: 4px;
+        padding: 0;
+        border-radius: var(--radius-sm);
+    }
+
+    .sidebar--collapsed .sidebar-footer {
+        padding: 10px 8px;
+        justify-content: center;
+    }
+
+    .sidebar--collapsed .user-chevron {
+        display: none;
+    }
+
+    .sidebar--collapsed .user-chip {
+        flex: none;
+        padding: 6px;
+    }
+
+    .sidebar--collapsed .user-menu {
+        left: 8px;
+    }
 }
 
 /* 6. Chat thread & messages
@@ -970,6 +1262,37 @@ button {
 
     .chat-header {
         display: flex;
+    }
+
+    .history {
+        position: fixed;
+        inset: 0 0 0 auto;
+        z-index: 50;
+        width: 300px;
+        margin-right: 0;
+        transform: translateX(100%);
+    }
+
+    .history.history--open {
+        transform: translateX(0);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .history-close {
+        display: inline-flex;
+    }
+
+    .history-toggle {
+        top: 9px;
+        right: 12px;
+        border: none;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    /* drawer pattern replaces collapse on small screens */
+    .sidebar-collapse-btn {
+        display: none;
     }
 
     .chat-thread {

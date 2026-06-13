@@ -14,6 +14,11 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <a class="brand" href="/">Clark<span class="brand-dot"></span></a>
+      <button class="icon-btn sidebar-collapse-btn" id="sidebarToggle" type="button" title="Toggle sidebar" aria-label="Toggle sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/>
+        </svg>
+      </button>
     </div>
 
     <div class="sidebar-section">
@@ -32,7 +37,7 @@
         No documents yet.<br />Upload PDF, DOCX, CSV or TXT files to get started.
       </div>
 
-      <button class="process-btn" id="processBtn" type="button">
+      <button class="process-btn" id="processBtn" type="button" title="Process documents">
         <svg class="process-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/>
         </svg>
@@ -42,15 +47,30 @@
     </div>
 
     <div class="sidebar-footer">
-      <div class="user-chip" title="{{ user.email }}">
+      <button class="user-chip" id="userMenuBtn" type="button" title="{{ user.email }}" aria-haspopup="menu" aria-expanded="false">
         <span class="user-avatar">{{ user.email[:1]|upper }}</span>
         <span class="user-email">{{ user.email }}</span>
-      </div>
-      <a class="icon-btn" href="/auth/logout" title="Log out" aria-label="Log out">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>
+        <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m6 14 6-6 6 6"/>
         </svg>
-      </a>
+      </button>
+
+      <div class="user-menu" id="userMenu" role="menu" hidden>
+        <div class="user-menu-header">
+          <span class="user-avatar">{{ user.email[:1]|upper }}</span>
+          <div class="user-menu-id">
+            <div class="user-menu-email">{{ user.email }}</div>
+            <div class="user-menu-plan">Signed in</div>
+          </div>
+        </div>
+        <div class="user-menu-divider"></div>
+        <a class="user-menu-item" href="/auth/logout" role="menuitem">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>
+          </svg>
+          Log out
+        </a>
+      </div>
     </div>
   </aside>
 
@@ -63,6 +83,12 @@
       </button>
       <span class="chat-header-title">Clark</span>
     </header>
+
+    <button class="icon-btn history-toggle" id="historyToggle" type="button" title="Toggle chat history" aria-label="Toggle chat history">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+      </svg>
+    </button>
 
     <div class="chat-scroll" id="chatScroll">
       <div class="chat-thread" id="chatThread">
@@ -100,11 +126,33 @@
     </div>
   </main>
 
+  <aside class="history" id="historyPanel">
+    <div class="history-header">
+      <span class="sidebar-section-title">History</span>
+      <div class="history-actions">
+        <button class="icon-btn" id="newChatBtn" type="button" title="New chat" aria-label="New chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+        </button>
+        <button class="icon-btn history-close" id="historyClose" type="button" title="Close history" aria-label="Close history">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="history-empty" id="historyEmpty" hidden>
+      No conversations yet.<br />Your chats will appear here.
+    </div>
+    <ul class="history-list" id="historyList"></ul>
+  </aside>
+
 </div>
 
 <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 {% endblock %}
 
 {% block scripts %}
-  <script src="{{url_for('static', path='js/index.js')}}?v=2" defer></script>
+  <script src="{{url_for('static', path='js/index.js')}}?v=5" defer></script>
 {% endblock %}

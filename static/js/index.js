@@ -13,7 +13,12 @@
     delete: "/delete_file/",
     process: "/process/",
     completions: "/completions/",
+    conversations: "/conversations",
   };
+
+  const HISTORY_VISIBLE_KEY = "clark-history-visible";
+  const SIDEBAR_COLLAPSED_KEY = "clark-sidebar-collapsed";
+  const MOBILE_QUERY = "(max-width: 768px)";
 
   const JSON_HEADERS = {
     Accept: "application/json",
@@ -135,19 +140,36 @@
       this.toastContainer = document.getElementById("toastContainer");
       this.sidebar = document.getElementById("sidebar");
       this.sidebarOverlay = document.getElementById("sidebarOverlay");
+      this.sidebarToggle = document.getElementById("sidebarToggle");
       this.menuBtn = document.getElementById("menuBtn");
+      this.userMenuBtn = document.getElementById("userMenuBtn");
+      this.userMenu = document.getElementById("userMenu");
+      this.historyPanel = document.getElementById("historyPanel");
+      this.historyList = document.getElementById("historyList");
+      this.historyEmpty = document.getElementById("historyEmpty");
+      this.historyToggle = document.getElementById("historyToggle");
+      this.historyClose = document.getElementById("historyClose");
+      this.newChatBtn = document.getElementById("newChatBtn");
 
       this.pending = false;
+      this.conversationId = null;
     }
 
     init() {
       this.bindComposer();
       this.bindSidebar();
+      this.bindHistory();
+      this.bindUserMenu();
       this.bindSuggestions();
       this.fileInput.addEventListener("change", () => this.uploadFiles());
       this.processBtn.addEventListener("click", () => this.processFiles());
       this.loadFiles();
+      this.loadConversations();
       this.input.focus();
+    }
+
+    isMobile() {
+      return window.matchMedia(MOBILE_QUERY).matches;
     }
 
     /* ----- networking ----- */
@@ -220,10 +242,9 @@
     /* ----- chat thread ----- */
 
     hideWelcome() {
-      if (this.welcome) {
-        this.welcome.remove();
-        this.welcome = null;
-      }
+      // Detached, not destroyed — newChat() puts it back with its
+      // suggestion-button listeners intact.
+      this.welcome.remove();
     }
 
     isNearBottom() {
@@ -310,9 +331,17 @@
         const answer = await this.request(API.completions, {
           method: "POST",
           headers: JSON_HEADERS,
-          body: JSON.stringify({ message: text }),
+          body: JSON.stringify({
+            message: text,
+            conversation_id: this.conversationId,
+          }),
         });
+        const isNewConversation = this.conversationId === null;
+        this.conversationId = answer.conversation_id;
         await this.typeOut(content, answer.content);
+        if (isNewConversation) {
+          await this.loadConversations();
+        }
       } catch (error) {
         console.error(error);
         message.classList.add("message--error");
@@ -443,15 +472,198 @@
     /* ----- sidebar (mobile) ----- */
 
     bindSidebar() {
-      const close = () => {
-        this.sidebar.classList.remove("sidebar--open");
-        this.sidebarOverlay.classList.remove("visible");
-      };
       this.menuBtn.addEventListener("click", () => {
         this.sidebar.classList.toggle("sidebar--open");
-        this.sidebarOverlay.classList.toggle("visible");
+        this.sidebarOverlay.classList.toggle(
+          "visible",
+          this.sidebar.classList.contains("sidebar--open")
+        );
       });
-      this.sidebarOverlay.addEventListener("click", close);
+      this.sidebarOverlay.addEventListener("click", () => this.closeDrawers());
+
+      this.sidebarToggle.addEventListener("click", () => {
+        const collapsed = this.sidebar.classList.toggle("sidebar--collapsed");
+        localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(collapsed));
+      });
+      if (!this.isMobile() && localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === "true") {
+        this.sidebar.classList.add("sidebar--collapsed");
+      }
+    }
+
+    closeDrawers() {
+      this.sidebar.classList.remove("sidebar--open");
+      this.historyPanel.classList.remove("history--open");
+      this.sidebarOverlay.classList.remove("visible");
+    }
+
+    /* ----- user menu ----- */
+
+    bindUserMenu() {
+      this.userMenuBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        this.setUserMenuOpen(this.userMenu.hidden);
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!this.userMenu.hidden && !this.userMenu.contains(event.target)) {
+          this.setUserMenuOpen(false);
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !this.userMenu.hidden) {
+          this.setUserMenuOpen(false);
+          this.userMenuBtn.focus();
+        }
+      });
+    }
+
+    setUserMenuOpen(open) {
+      this.userMenu.hidden = !open;
+      this.userMenuBtn.setAttribute("aria-expanded", String(open));
+    }
+
+    /* ----- chat history ----- */
+
+    bindHistory() {
+      this.historyToggle.addEventListener("click", () => this.toggleHistory());
+      this.historyClose.addEventListener("click", () => this.closeDrawers());
+      this.newChatBtn.addEventListener("click", () => this.newChat());
+
+      if (!this.isMobile() && localStorage.getItem(HISTORY_VISIBLE_KEY) === "false") {
+        this.historyPanel.classList.add("history--hidden");
+      }
+    }
+
+    toggleHistory() {
+      if (this.isMobile()) {
+        const open = this.historyPanel.classList.toggle("history--open");
+        this.sidebar.classList.remove("sidebar--open");
+        this.sidebarOverlay.classList.toggle("visible", open);
+      } else {
+        const hidden = this.historyPanel.classList.toggle("history--hidden");
+        localStorage.setItem(HISTORY_VISIBLE_KEY, String(!hidden));
+      }
+    }
+
+    async loadConversations() {
+      try {
+        const conversations = await this.request(API.conversations);
+        this.renderConversations(conversations);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    renderConversations(conversations) {
+      this.historyList.innerHTML = "";
+      this.historyEmpty.hidden = conversations.length > 0;
+
+      for (const conversation of conversations) {
+        const item = document.createElement("li");
+        item.className = "history-item";
+        item.dataset.id = String(conversation.id);
+        if (conversation.id === this.conversationId) {
+          item.classList.add("history-item--active");
+        }
+
+        const body = document.createElement("div");
+        body.className = "history-item-body";
+        const title = document.createElement("div");
+        title.className = "history-item-title";
+        title.textContent = conversation.title;
+        const date = document.createElement("div");
+        date.className = "history-item-date";
+        date.textContent = new Date(conversation.created_at).toLocaleDateString(
+          undefined,
+          { month: "short", day: "numeric" }
+        );
+        body.append(title, date);
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "history-delete";
+        deleteBtn.type = "button";
+        deleteBtn.title = "Delete conversation";
+        deleteBtn.textContent = "✕";
+        deleteBtn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (deleteBtn.classList.contains("confirm")) {
+            this.deleteConversation(conversation.id);
+          } else {
+            deleteBtn.classList.add("confirm");
+            deleteBtn.textContent = "Sure?";
+            setTimeout(() => {
+              deleteBtn.classList.remove("confirm");
+              deleteBtn.textContent = "✕";
+            }, 2500);
+          }
+        });
+
+        item.append(body, deleteBtn);
+        item.addEventListener("click", () => this.openConversation(conversation.id));
+        this.historyList.appendChild(item);
+      }
+    }
+
+    async openConversation(id) {
+      if (this.pending || id === this.conversationId) {
+        if (this.isMobile()) this.closeDrawers();
+        return;
+      }
+      try {
+        const messages = await this.request(`${API.conversations}/${id}`);
+        this.conversationId = id;
+        this.hideWelcome();
+        this.thread.innerHTML = "";
+        for (const message of messages) {
+          if (message.role === "user") {
+            this.addUserMessage(message.content);
+          } else {
+            const { content } = this.addAssistantMessage();
+            content.innerHTML = renderMarkdown(message.content);
+          }
+        }
+        this.markActiveConversation();
+        this.scrollToBottom(true);
+        if (this.isMobile()) this.closeDrawers();
+        this.input.focus();
+      } catch (error) {
+        console.error(error);
+        this.toast("Couldn't load that conversation.", "error");
+      }
+    }
+
+    markActiveConversation() {
+      this.historyList.querySelectorAll(".history-item").forEach((item) => {
+        item.classList.toggle(
+          "history-item--active",
+          Number(item.dataset.id) === this.conversationId
+        );
+      });
+    }
+
+    newChat() {
+      if (this.pending) return;
+      this.conversationId = null;
+      this.thread.innerHTML = "";
+      this.thread.appendChild(this.welcome);
+      this.markActiveConversation();
+      if (this.isMobile()) this.closeDrawers();
+      this.input.focus();
+    }
+
+    async deleteConversation(id) {
+      try {
+        await this.request(`${API.conversations}/${id}`, { method: "DELETE" });
+        if (id === this.conversationId) {
+          this.newChat();
+        }
+        await this.loadConversations();
+        this.toast("Conversation deleted.", "success");
+      } catch (error) {
+        console.error(error);
+        this.toast("Couldn't delete the conversation.", "error");
+      }
     }
 
     /* ----- toasts ----- */

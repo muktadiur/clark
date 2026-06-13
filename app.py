@@ -16,8 +16,12 @@ from auth.security import get_user_from_token
 from clark.helpers import get_chain, create_vectors
 from core.logger import logger
 from db.database import create_tables, get_db
+from db.models import Conversation, Message
+from schemas.chat import ConversationSummary, MessageOut
 from schemas.question import Question, File
 from schemas.response import CompletionResponse, GenericResponse
+
+CONVERSATION_TITLE_LENGTH = 60
 
 load_dotenv()
 
@@ -133,19 +137,98 @@ async def process_files(
     return GenericResponse(status="success")
 
 
+def _get_owned_conversation(
+    conversation_id: int, user_id: int, db: Session
+) -> Conversation:
+    conversation = (
+        db.query(Conversation)
+        .filter(Conversation.id == conversation_id, Conversation.user_id == user_id)
+        .first()
+    )
+    if not conversation:
+        raise HTTPException(status_code=404, detail="Conversation not found")
+    return conversation
+
+
 @app.post("/completions/", tags=["LLM"])
 async def completions(
     question: Question,
     request: Request,
     db: Session = Depends(get_db),
 ) -> CompletionResponse:
-    if not _get_current_user(request, db):
+    user = _get_current_user(request, db)
+    if not user:
         raise HTTPException(status_code=401, detail="Not authenticated")
+
+    conversation = None
+    if question.conversation_id is not None:
+        conversation = _get_owned_conversation(question.conversation_id, user.id, db)
+
     chain = get_chain()
     result = chain.invoke({"question": question.message})
     content = result["answer"]
     logger.info(f"Response: {content}")
-    return CompletionResponse(content=content)
+
+    if conversation is None:
+        title = " ".join(question.message.split())
+        if len(title) > CONVERSATION_TITLE_LENGTH:
+            title = title[: CONVERSATION_TITLE_LENGTH - 1].rstrip() + "…"
+        conversation = Conversation(user_id=user.id, title=title)
+        db.add(conversation)
+        db.flush()
+
+    db.add_all(
+        [
+            Message(conversation_id=conversation.id, role="user", content=question.message),
+            Message(conversation_id=conversation.id, role="assistant", content=content),
+        ]
+    )
+    db.commit()
+    return CompletionResponse(content=content, conversation_id=conversation.id)
+
+
+@app.get("/conversations", tags=["Chat"])
+async def list_conversations(
+    request: Request,
+    db: Session = Depends(get_db),
+) -> list[ConversationSummary]:
+    user = _get_current_user(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return (
+        db.query(Conversation)
+        .filter(Conversation.user_id == user.id)
+        .order_by(Conversation.id.desc())
+        .all()
+    )
+
+
+@app.get("/conversations/{conversation_id}", tags=["Chat"])
+async def get_conversation(
+    conversation_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> list[MessageOut]:
+    user = _get_current_user(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    conversation = _get_owned_conversation(conversation_id, user.id, db)
+    return conversation.messages
+
+
+@app.delete("/conversations/{conversation_id}", tags=["Chat"])
+async def delete_conversation(
+    conversation_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+) -> GenericResponse:
+    user = _get_current_user(request, db)
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    conversation = _get_owned_conversation(conversation_id, user.id, db)
+    db.delete(conversation)
+    db.commit()
+    return GenericResponse(status="success")
 
 
 if __name__ == "__main__":
